@@ -66,7 +66,7 @@ export default function MatchCard({
         </div>
 
         <div className="match-card__center">
-          {score !== null && score !== undefined ? (
+          {(isLive || played) && score !== null && score !== undefined ? (
             <div className="match-card__score">
               <span
                 className={`match-card__score-num${score.home > score.away ? " match-card__score-num--win" : ""}`}

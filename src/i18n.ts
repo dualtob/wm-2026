@@ -101,6 +101,8 @@ const strings = {
     predReachFinal: "Llega a la final",
     marketFavourite: "Favorito del mercado",
     marketTossUp: "Muy igualado",
+    refresh: "Actualizar",
+    calToday: "Hoy",
   },
 
   en: {
@@ -201,6 +203,8 @@ const strings = {
     predReachFinal: "Reach final",
     marketFavourite: "Market favourite",
     marketTossUp: "Very close",
+    refresh: "Refresh",
+    calToday: "Today",
   },
 
   de: {
@@ -301,6 +305,8 @@ const strings = {
     predReachFinal: "Finale erreichen",
     marketFavourite: "Marktfavorit",
     marketTossUp: "Sehr ausgeglichen",
+    refresh: "Aktualisieren",
+    calToday: "Heute",
   },
 } as const;
 

@@ -14,6 +14,7 @@ interface MatchListProps {
   onTeamClick?: (name: string) => void;
   onMatchClick?: (match: Match) => void;
   mode?: Mode;
+  markTodayAnchor?: boolean;
 }
 
 function getDateKey(date: Date | null): string {
@@ -49,6 +50,7 @@ export default function MatchList({
   onTeamClick,
   onMatchClick,
   mode = "upcoming",
+  markTodayAnchor = false,
 }: MatchListProps) {
   const [filterMine, setFilterMine] = useState(false);
 
@@ -70,6 +72,11 @@ export default function MatchList({
   const sortedKeys = Object.keys(dateGroups).sort((a, b) =>
     mode === "results" ? b.localeCompare(a) : a.localeCompare(b)
   );
+
+  // First date key that is today or in the future (for today anchor)
+  const todayAnchorKey = markTodayAnchor
+    ? sortedKeys.find((k) => k >= todayKey) ?? null
+    : null;
 
   if (filtered.length === 0) {
     return (
@@ -117,7 +124,11 @@ export default function MatchList({
       )}
 
       {sortedKeys.map((dateKey) => (
-        <section key={dateKey} className="date-group">
+        <section
+          key={dateKey}
+          className="date-group"
+          id={dateKey === todayAnchorKey ? "calendar-today" : undefined}
+        >
           <h2 className="date-group__header">
             {formatDateHeader(dateKey, lang, todayKey, tomorrowKey)}
           </h2>

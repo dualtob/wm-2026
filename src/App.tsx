@@ -7,6 +7,7 @@ import { computeStandings, mergeEspnScores } from "./api/fixtures";
 import { t, getStoredLang, storeLang, LANGS, LANG_LABELS } from "./i18n";
 import { useFixtures, useScoreboard } from "./hooks/useFixtures";
 import { useChampionOdds } from "./hooks/useChampionOdds";
+import { useMatchDetail } from "./hooks/useMatchDetail";
 import type { Match, Lang } from "./types";
 import { TZ, LS_MY_TEAMS_KEY } from "./constants";
 
@@ -40,6 +41,67 @@ function TabSkeleton() {
   );
 }
 
+interface GoalEvent {
+  minute: string;
+  scorer: string;
+  assist?: string;
+  ownGoal: boolean;
+  side: "home" | "away";
+}
+
+function parseGoals(detail: unknown, homeEspnId: string | null | undefined): GoalEvent[] {
+  const data = detail as {
+    competitions?: Array<{
+      competitors?: Array<{ homeAway: string; team?: { id?: string } }>;
+      details?: Array<{
+        scoringPlay?: boolean;
+        ownGoal?: boolean;
+        clock?: { displayValue?: string };
+        team?: { id?: string };
+        athletesInvolved?: Array<{ displayName?: string }>;
+        assistsInvolved?: Array<{ displayName?: string }>;
+      }>;
+    }>;
+  };
+  const comp = data?.competitions?.[0];
+  if (!comp) return [];
+  const homeId =
+    comp.competitors?.find((c) => c.homeAway === "home")?.team?.id ?? homeEspnId;
+  return (comp.details ?? [])
+    .filter((d) => d.scoringPlay)
+    .map((d) => ({
+      minute: d.clock?.displayValue ?? "",
+      scorer: d.athletesInvolved?.[0]?.displayName ?? "?",
+      assist: d.assistsInvolved?.[0]?.displayName,
+      ownGoal: d.ownGoal ?? false,
+      side: d.team?.id === homeId ? "home" : "away",
+    }));
+}
+
+function MatchGoals({ espnId, homeEspnId, lang }: { espnId: string; homeEspnId: string | null | undefined; lang: Lang }) {
+  const { data, isLoading } = useMatchDetail(espnId);
+  if (isLoading) return <div className="modal-goals-loading"><div className="spinner" /></div>;
+  const goals = parseGoals(data, homeEspnId);
+  if (!goals.length) return null;
+  return (
+    <div className="match-modal__goals">
+      <h3 className="match-modal__goals-title">{t(lang, "detailGoals")}</h3>
+      <ul className="goal-list">
+        {goals.map((g, i) => (
+          <li key={i} className={`goal-item goal-item--${g.side}`}>
+            <span className="goal-item__minute">{g.minute}</span>
+            <span className="goal-item__scorer">
+              {g.scorer}
+              {g.ownGoal && <span className="goal-item__tag">OG</span>}
+              {g.assist && <span className="goal-item__assist"> ({g.assist})</span>}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function App() {
   const [lang, setLang] = useState<Lang>(() => getStoredLang());
   const [activeTab, setActiveTab] = useState<TabId>("upcoming");
@@ -61,7 +123,7 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
 
   // Data via TanStack Query
-  const { data: fixturesResult, isLoading, isError, error, refetch } = useFixtures();
+  const { data: fixturesResult, isLoading, isFetching, isError, error, refetch } = useFixtures();
   const rawMatches = fixturesResult?.matches ?? [];
 
   const hasLive = useMemo(() => rawMatches.some((m) => m.isLive), [rawMatches]);
@@ -130,6 +192,17 @@ export default function App() {
         <div className="app-header__inner">
           <h1 className="app-title">{t(lang, "appTitle")}</h1>
           <div className="app-header__right">
+            <button
+              className={`refresh-btn${isFetching ? " refresh-btn--spinning" : ""}`}
+              onClick={() => refetch()}
+              aria-label={t(lang, "refresh")}
+              disabled={isFetching}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+            </button>
             <button
               className="settings-btn"
               onClick={() => setShowSettings(true)}
@@ -232,14 +305,27 @@ export default function App() {
 
             {activeTab === "calendar" && (
               <div className="tab-panel">
+                <div className="cal-toolbar">
+                  <button
+                    className="today-btn"
+                    onClick={() =>
+                      document
+                        .getElementById("calendar-today")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }
+                  >
+                    {t(lang, "calToday")} ↓
+                  </button>
+                </div>
                 <MatchList
-                  matches={matches.filter((m) => !m.isPlaceholder && !m.played && !m.isLive)}
+                  matches={matches.filter((m) => !m.isPlaceholder)}
                   lang={lang}
                   myTeams={myTeams}
                   showFilter={false}
                   onTeamClick={setOpenTeam}
                   onMatchClick={setOpenMatch}
                   mode="calendar"
+                  markTodayAnchor={true}
                 />
               </div>
             )}
@@ -421,6 +507,14 @@ export default function App() {
                 </div>
               )}
             </div>
+
+            {(openMatch.isLive || openMatch.played) && openMatch.espnId && (
+              <MatchGoals
+                espnId={openMatch.espnId}
+                homeEspnId={openMatch.team1.espnId}
+                lang={lang}
+              />
+            )}
           </div>
         </div>
       )}

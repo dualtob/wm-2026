@@ -34,7 +34,7 @@
 
   --nav-height: 60px;
   --header-height: 56px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-bottom: 0px;
   --safe-top: env(safe-area-inset-top, 0px);
 
   --radius-sm: 6px;
@@ -66,6 +66,15 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* In browser mode (non-PWA), dvh already excludes browser chrome so --safe-bottom
+   stays 0. Only in standalone/fullscreen (installed PWA) do we need the home
+   indicator inset, because there the viewport extends to the physical screen edge. */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  :root {
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 

@@ -1,6 +1,15 @@
-import { t } from "../i18n.js";
+import { t } from "../i18n";
+import type { Lang } from "../types";
 
-const TABS = [
+type TabId = "upcoming" | "calendar" | "groups" | "stats";
+
+interface NavBarProps {
+  activeTab: TabId;
+  onTabChange: (tab: TabId) => void;
+  lang: Lang;
+}
+
+const TABS: Array<{ id: TabId; labelKey: Parameters<typeof t>[1]; icon: React.ReactNode }> = [
   {
     id: "upcoming",
     labelKey: "navUpcoming",
@@ -50,7 +59,7 @@ const TABS = [
   },
 ];
 
-export default function NavBar({ activeTab, onTabChange, lang }) {
+export default function NavBar({ activeTab, onTabChange, lang }: NavBarProps) {
   return (
     <nav className="nav-bar" role="tablist" aria-label="Main navigation">
       {TABS.map((tab) => (

@@ -1,9 +1,16 @@
-import { useState, useEffect } from "react";
-import { fetchLeaders } from "../api/espn.js";
-import FlagIcon from "./FlagIcon.jsx";
-import { t } from "../i18n.js";
+import { useState } from "react";
+import FlagIcon from "./FlagIcon";
+import { t } from "../i18n";
+import { useLeaders } from "../hooks/useLeaders";
+import type { Player, Lang } from "../types";
 
-function PlayerRow({ player, rank, unit, lang }) {
+interface PlayerRowProps {
+  player: Player;
+  rank: number;
+  unit: string;
+}
+
+function PlayerRow({ player, rank, unit }: PlayerRowProps) {
   const [headshotFailed, setHeadshotFailed] = useState(false);
 
   return (
@@ -39,35 +46,15 @@ function PlayerRow({ player, rank, unit, lang }) {
   );
 }
 
-export default function Stats({ lang }) {
-  const [leaders, setLeaders] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("scorers");
+interface StatsProps {
+  lang: Lang;
+}
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
+export default function Stats({ lang }: StatsProps) {
+  const [activeTab, setActiveTab] = useState<"scorers" | "assists">("scorers");
+  const { data: leaders, isLoading, isError } = useLeaders();
 
-    fetchLeaders()
-      .then((data) => {
-        if (!cancelled) {
-          setLeaders(data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err.message);
-          setLoading(false);
-        }
-      });
-
-    return () => { cancelled = true; };
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="stats-loading">
         <div className="spinner" />
@@ -76,7 +63,7 @@ export default function Stats({ lang }) {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="stats-error">
         <p className="stats-error__title">{t(lang, "statsError")}</p>
@@ -85,14 +72,12 @@ export default function Stats({ lang }) {
     );
   }
 
-  const scorers = leaders?.scorers || [];
-  const assists = leaders?.assists || [];
-
+  const scorers = leaders?.scorers ?? [];
+  const assists = leaders?.assists ?? [];
   const isEmpty = activeTab === "scorers" ? scorers.length === 0 : assists.length === 0;
 
   return (
     <div className="stats-view">
-      {/* Sub-tabs */}
       <div className="segment-control" role="tablist">
         <button
           role="tab"
@@ -117,7 +102,9 @@ export default function Stats({ lang }) {
           <div className="empty-state__content">
             <div className="empty-state__icon">⚽</div>
             <p className="empty-state__text">
-              {activeTab === "scorers" ? t(lang, "statsEmptyScorers") : t(lang, "statsEmptyAssists")}
+              {activeTab === "scorers"
+                ? t(lang, "statsEmptyScorers")
+                : t(lang, "statsEmptyAssists")}
             </p>
             <p className="empty-state__hint">{t(lang, "statsEmptyHint")}</p>
           </div>
@@ -130,7 +117,6 @@ export default function Stats({ lang }) {
               player={player}
               rank={idx + 1}
               unit={activeTab === "scorers" ? t(lang, "unitGoals") : t(lang, "unitAssists")}
-              lang={lang}
             />
           ))}
         </div>

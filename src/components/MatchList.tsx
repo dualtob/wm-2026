@@ -1,28 +1,39 @@
 import { useState } from "react";
-import MatchCard from "./MatchCard.jsx";
-import { t } from "../i18n.js";
+import MatchCard from "./MatchCard";
+import { t } from "../i18n";
+import type { Match, Lang } from "../types";
+import { TZ } from "../constants";
 
-const TZ = "Europe/Berlin";
+type Mode = "upcoming" | "results" | "calendar";
 
-function getDateKey(date) {
+interface MatchListProps {
+  matches: Match[];
+  lang: Lang;
+  myTeams: string[];
+  showFilter: boolean;
+  onTeamClick?: (name: string) => void;
+  onMatchClick?: (match: Match) => void;
+  mode?: Mode;
+}
+
+function getDateKey(date: Date | null): string {
   if (!date) return "unknown";
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(date);
 }
 
-function getTodayKey() {
+function getTodayKey(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(new Date());
 }
 
-function getTomorrowKey() {
+function getTomorrowKey(): string {
   const d = new Date();
   d.setDate(d.getDate() + 1);
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(d);
 }
 
-function formatDateHeader(dateKey, lang, todayKey, tomorrowKey) {
+function formatDateHeader(dateKey: string, lang: Lang, todayKey: string, tomorrowKey: string): string {
   if (dateKey === todayKey) return t(lang, "relToday");
   if (dateKey === tomorrowKey) return t(lang, "relTomorrow");
-
   const date = new Date(dateKey + "T12:00:00Z");
   return new Intl.DateTimeFormat(
     lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES",
@@ -37,30 +48,28 @@ export default function MatchList({
   showFilter,
   onTeamClick,
   onMatchClick,
-  mode = "upcoming", // "upcoming" | "results" | "calendar"
-}) {
+  mode = "upcoming",
+}: MatchListProps) {
   const [filterMine, setFilterMine] = useState(false);
 
   const todayKey = getTodayKey();
   const tomorrowKey = getTomorrowKey();
 
-  // Filter by "mine" selection
-  const filtered = filterMine && myTeams?.length > 0
-    ? matches.filter((m) => myTeams.includes(m.team1.name) || myTeams.includes(m.team2.name))
-    : matches;
+  const filtered =
+    filterMine && myTeams?.length > 0
+      ? matches.filter((m) => myTeams.includes(m.team1.name) || myTeams.includes(m.team2.name))
+      : matches;
 
-  // Group by date
-  const dateGroups = {};
+  const dateGroups: Record<string, Match[]> = {};
   for (const m of filtered) {
     const key = getDateKey(m.kickoff);
     if (!dateGroups[key]) dateGroups[key] = [];
     dateGroups[key].push(m);
   }
 
-  const sortedKeys = Object.keys(dateGroups).sort((a, b) => {
-    if (mode === "results") return b.localeCompare(a);
-    return a.localeCompare(b);
-  });
+  const sortedKeys = Object.keys(dateGroups).sort((a, b) =>
+    mode === "results" ? b.localeCompare(a) : a.localeCompare(b)
+  );
 
   if (filtered.length === 0) {
     return (
@@ -100,7 +109,8 @@ export default function MatchList({
           </button>
           {filterMine && myTeams?.length > 0 && (
             <span className="filter-count">
-              {filtered.length} {filtered.length === 1 ? t(lang, "matchSingular") : t(lang, "matchPlural")}
+              {filtered.length}{" "}
+              {filtered.length === 1 ? t(lang, "matchSingular") : t(lang, "matchPlural")}
             </span>
           )}
         </div>

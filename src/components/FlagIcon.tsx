@@ -1,7 +1,12 @@
-import { getFlagCode } from "../teams.js";
+import { getFlagCode } from "../teams";
 
-// Renders a circular flag from the HatScripts circle-flags CDN
-export default function FlagIcon({ team, size = 24, className = "" }) {
+interface FlagIconProps {
+  team: string;
+  size?: number;
+  className?: string;
+}
+
+export default function FlagIcon({ team, size = 24, className = "" }: FlagIconProps) {
   const code = getFlagCode(team);
   const url = `https://cdn.jsdelivr.net/gh/HatScripts/circle-flags@gh-pages/flags/${code}.svg`;
 
@@ -13,7 +18,6 @@ export default function FlagIcon({ team, size = 24, className = "" }) {
       height={size}
       className={`flag-icon ${className}`}
       onError={(e) => {
-        // Fallback: hide broken flag
         e.currentTarget.style.display = "none";
       }}
       loading="lazy"

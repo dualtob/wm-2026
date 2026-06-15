@@ -1,5 +1,10 @@
-// Complete team data for FIFA World Cup 2026 (48 teams)
-export const TEAMS = {
+export interface TeamData {
+  espnId: string;
+  abbr: string;
+  color: string;
+}
+
+export const TEAMS: Record<string, TeamData> = {
   Algeria: { espnId: "624", abbr: "ALG", color: "5bbd19" },
   Argentina: { espnId: "202", abbr: "ARG", color: "74acdf" },
   Australia: { espnId: "628", abbr: "AUS", color: "2a2d7c" },
@@ -12,7 +17,7 @@ export const TEAMS = {
   Colombia: { espnId: "208", abbr: "COL", color: "fbd632" },
   "DR Congo": { espnId: "2850", abbr: "COD", color: "418fde" },
   Croatia: { espnId: "477", abbr: "CRO", color: "ff0000" },
-  Curaçao: { espnId: "11678", abbr: "CUW", color: "0537e4" },
+  "Curaçao": { espnId: "11678", abbr: "CUW", color: "0537e4" },
   "Czech Republic": { espnId: "450", abbr: "CZE", color: "d7141a" },
   Ecuador: { espnId: "209", abbr: "ECU", color: "ffdd00" },
   Egypt: { espnId: "2620", abbr: "EGY", color: "d20300" },
@@ -50,47 +55,37 @@ export const TEAMS = {
   Uzbekistan: { espnId: "2570", abbr: "UZB", color: "0081d6" },
 };
 
-// Normalize team name from various API sources to our TEAMS keys
-export function normalizeTeamName(name) {
+export function normalizeTeamName(name: string): string {
   if (!name) return name;
-  const map = {
+  const map: Record<string, string> = {
     "United States": "USA",
     "United States of America": "USA",
-    "US": "USA",
+    US: "USA",
     "Korea Republic": "South Korea",
     "Republic of Korea": "South Korea",
-    "South Korea": "South Korea",
     "Côte d'Ivoire": "Ivory Coast",
     "Cote d'Ivoire": "Ivory Coast",
     "côte d'ivoire": "Ivory Coast",
     "Bosnia and Herzegovina": "Bosnia & Herzegovina",
     "Bosnia-Herzegovina": "Bosnia & Herzegovina",
-    "Czech Republic": "Czech Republic",
-    "Czechia": "Czech Republic",
-    "DRC": "DR Congo",
+    Czechia: "Czech Republic",
+    DRC: "DR Congo",
     "Congo DR": "DR Congo",
     "Democratic Republic of Congo": "DR Congo",
-    "New Zealand": "New Zealand",
-    "Saudi Arabia": "Saudi Arabia",
-    "Cape Verde": "Cape Verde",
     "Cabo Verde": "Cape Verde",
-    "Curacao": "Curaçao",
-    "Curaçao": "Curaçao",
+    Curacao: "Curaçao",
   };
   return map[name] || name;
 }
 
-// Get team data by name (with normalization)
-export function getTeam(name) {
+export function getTeam(name: string): TeamData | null {
   const normalized = normalizeTeamName(name);
-  return TEAMS[normalized] || null;
+  return TEAMS[normalized] ?? null;
 }
 
-// Get flag code for circle-flags CDN
-// Maps team names to ISO 3166-1 alpha-2 codes
-export function getFlagCode(teamName) {
+export function getFlagCode(teamName: string): string {
   const normalized = normalizeTeamName(teamName);
-  const flagMap = {
+  const flagMap: Record<string, string> = {
     Algeria: "dz",
     Argentina: "ar",
     Australia: "au",
@@ -143,18 +138,7 @@ export function getFlagCode(teamName) {
   return flagMap[normalized] || normalized.toLowerCase().replace(/\s+/g, "-");
 }
 
-// Get team color as CSS variable-friendly hex
-export function getTeamColor(teamName) {
+export function getTeamColor(teamName: string): string {
   const team = getTeam(teamName);
   return team ? `#${team.color}` : "#888888";
-}
-
-// Build ESPN roster URL
-export function espnRosterUrl(espnId) {
-  return `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/teams/${espnId}/roster`;
-}
-
-// Build ESPN player headshot URL
-export function espnHeadshotUrl(playerId) {
-  return `https://a.espncdn.com/i/headshots/soccer/players/full/${playerId}.png`;
 }

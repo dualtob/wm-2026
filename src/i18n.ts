@@ -1,5 +1,6 @@
-// Internationalization strings for World Cup 2026
-// Languages: en (English, default), de (German), es (Spanish)
+import type { Lang } from "./types";
+
+type StringKey = keyof (typeof strings)["en"];
 
 const strings = {
   es: {
@@ -7,26 +8,18 @@ const strings = {
     updated: "Actualizado",
     offline: "Sin conexión",
     copyOf: "copia del",
-
-    // Navigation
     navUpcoming: "Próximos",
     navCalendar: "Calendario",
     navGroups: "Grupos",
     navStats: "Estadísticas",
-
-    // Tabs
     tabUpcoming: "Próximos",
     tabResults: "Resultados",
     filterMine: "Mis selecciones",
     filterAll: "Todos",
-
-    // Empty states
     emptyNoUpcoming: "No hay partidos próximos",
     emptyNoUpcomingHint: "El torneo aún no ha empezado o ya ha terminado.",
     emptyNoResults: "Aún no hay resultados",
     emptyFilterHint: "Desactiva el filtro o añade selecciones para ver más.",
-
-    // Match details
     matchSingular: "partido",
     matchPlural: "partidos",
     live: "En juego",
@@ -38,21 +31,15 @@ const strings = {
     detailGoals: "Goles",
     detailStats: "Estadísticas",
     detailStandings: "Clasificación",
-
-    // Match stats
     statPossession: "Posesión",
     statShots: "Tiros",
     statShotsOn: "A puerta",
     statCorners: "Córners",
     statFouls: "Faltas",
     statYellow: "Amarillas",
-
-    // Group table legend
     legendQualify: "1.º–2.º clasifican",
     legendThird: "3.º mejores terceros",
     legendOut: "4.º eliminado",
-
-    // Table headers
     thTeam: "Equipo",
     thMP: "PJ",
     thW: "G",
@@ -62,8 +49,6 @@ const strings = {
     thGA: "GC",
     thGD: "DG",
     thPts: "Pts",
-
-    // Stats page
     statsScorers: "Goleadores",
     statsAssists: "Asistencias",
     unitGoals: "goles",
@@ -74,16 +59,12 @@ const strings = {
     statsLoading: "Cargando estadísticas…",
     statsError: "No se pudieron cargar las estadísticas",
     statsErrorHint: "Vuelve a intentarlo más tarde.",
-
-    // Selection (My Teams)
     selTitle: "Mis selecciones",
     selFollowed: "seguidas",
     selToggleHint: "toca para alternar",
     selClearAll: "Quitar todas",
     selDefault: "Por defecto",
     selDone: "Listo",
-
-    // Team sheet
     teamSquad: "Plantilla",
     teamMatches: "Partidos",
     teamSquadNA: "Plantilla no disponible todavía.",
@@ -92,20 +73,14 @@ const strings = {
     posD: "Defensas",
     posM: "Centrocampistas",
     posF: "Delanteros",
-
-    // Loading / errors
     loadingMatches: "Cargando partidos…",
     retry: "Reintentar",
     errorTitle: "No se pudieron cargar los datos",
-
-    // General
     group: "Grupo",
     matchdayAbbr: "J",
     relToday: "Hoy",
     relTomorrow: "Mañana",
     language: "Idioma",
-
-    // Predictions / Polymarket
     predChampion: "Campeón",
     predTopScorer: "Pichichi",
     predGroups: "Grupos",
@@ -114,17 +89,11 @@ const strings = {
     predEmptyHint: "Vuelve más tarde: el mercado puede no estar disponible aún.",
     predWinProb: "Probabilidad · Polymarket",
     draw: "Empate",
-
-    // Best third
     thirdTitle: "Mejores terceros",
     thirdHint: "Los 8 mejores clasifican",
-
-    // Knockout bracket
     segGroups: "Grupos",
     segKnockout: "Eliminatorias",
     bracketEmpty: "El cuadro se completará al acabar la fase de grupos.",
-
-    // Misc
     thirdPlaceShort: "3.er puesto",
     teamPredTitle: "Pronósticos · Polymarket",
     predAdvance: "Pasa de grupo",
@@ -139,22 +108,18 @@ const strings = {
     updated: "Updated",
     offline: "Offline",
     copyOf: "copy of",
-
     navUpcoming: "Upcoming",
     navCalendar: "Calendar",
     navGroups: "Groups",
     navStats: "Stats",
-
     tabUpcoming: "Upcoming",
     tabResults: "Results",
     filterMine: "My teams",
     filterAll: "All",
-
     emptyNoUpcoming: "No upcoming matches",
     emptyNoUpcomingHint: "The tournament hasn't started yet or has already ended.",
     emptyNoResults: "No results yet",
     emptyFilterHint: "Disable the filter or add teams to see more.",
-
     matchSingular: "match",
     matchPlural: "matches",
     live: "Live",
@@ -166,18 +131,15 @@ const strings = {
     detailGoals: "Goals",
     detailStats: "Statistics",
     detailStandings: "Standings",
-
     statPossession: "Possession",
     statShots: "Shots",
     statShotsOn: "On Target",
     statCorners: "Corners",
     statFouls: "Fouls",
     statYellow: "Yellow Cards",
-
     legendQualify: "1st–2nd qualify",
     legendThird: "3rd best thirds",
     legendOut: "4th eliminated",
-
     thTeam: "Team",
     thMP: "MP",
     thW: "W",
@@ -187,7 +149,6 @@ const strings = {
     thGA: "GA",
     thGD: "GD",
     thPts: "Pts",
-
     statsScorers: "Top Scorers",
     statsAssists: "Top Assists",
     unitGoals: "goals",
@@ -198,14 +159,12 @@ const strings = {
     statsLoading: "Loading statistics…",
     statsError: "Could not load statistics",
     statsErrorHint: "Please try again later.",
-
     selTitle: "My Teams",
     selFollowed: "followed",
     selToggleHint: "tap to toggle",
     selClearAll: "Clear all",
     selDefault: "Default",
     selDone: "Done",
-
     teamSquad: "Squad",
     teamMatches: "Matches",
     teamSquadNA: "Squad not available yet.",
@@ -214,17 +173,14 @@ const strings = {
     posD: "Defenders",
     posM: "Midfielders",
     posF: "Forwards",
-
     loadingMatches: "Loading matches…",
     retry: "Retry",
     errorTitle: "Could not load data",
-
     group: "Group",
     matchdayAbbr: "MD",
     relToday: "Today",
     relTomorrow: "Tomorrow",
     language: "Language",
-
     predChampion: "Champion",
     predTopScorer: "Top Scorer",
     predGroups: "Groups",
@@ -233,14 +189,11 @@ const strings = {
     predEmptyHint: "Check back later – the market may not be available yet.",
     predWinProb: "Win Probability · Polymarket",
     draw: "Draw",
-
     thirdTitle: "Best Third-Placed Teams",
     thirdHint: "Top 8 advance",
-
     segGroups: "Groups",
     segKnockout: "Knockout",
     bracketEmpty: "Bracket will be filled after the group stage.",
-
     thirdPlaceShort: "3rd place",
     teamPredTitle: "Predictions · Polymarket",
     predAdvance: "Advance",
@@ -255,22 +208,18 @@ const strings = {
     updated: "Aktualisiert",
     offline: "Offline",
     copyOf: "Kopie vom",
-
     navUpcoming: "Nächste",
     navCalendar: "Kalender",
     navGroups: "Gruppen",
     navStats: "Statistik",
-
     tabUpcoming: "Nächste",
     tabResults: "Ergebnisse",
     filterMine: "Meine Teams",
     filterAll: "Alle",
-
     emptyNoUpcoming: "Keine bevorstehenden Spiele",
     emptyNoUpcomingHint: "Das Turnier hat noch nicht begonnen oder ist bereits beendet.",
     emptyNoResults: "Noch keine Ergebnisse",
     emptyFilterHint: "Filter deaktivieren oder Teams hinzufügen, um mehr zu sehen.",
-
     matchSingular: "Spiel",
     matchPlural: "Spiele",
     live: "Live",
@@ -282,18 +231,15 @@ const strings = {
     detailGoals: "Tore",
     detailStats: "Statistiken",
     detailStandings: "Tabelle",
-
     statPossession: "Ballbesitz",
     statShots: "Schüsse",
     statShotsOn: "Aufs Tor",
     statCorners: "Ecken",
     statFouls: "Fouls",
     statYellow: "Gelbe Karten",
-
     legendQualify: "1.–2. Qualifiziert",
     legendThird: "3. Beste Dritten",
     legendOut: "4. Ausgeschieden",
-
     thTeam: "Team",
     thMP: "Sp",
     thW: "S",
@@ -303,7 +249,6 @@ const strings = {
     thGA: "Geg.",
     thGD: "Diff",
     thPts: "Pkt",
-
     statsScorers: "Torschützen",
     statsAssists: "Vorlagen",
     unitGoals: "Tore",
@@ -314,14 +259,12 @@ const strings = {
     statsLoading: "Statistiken werden geladen…",
     statsError: "Statistiken konnten nicht geladen werden",
     statsErrorHint: "Bitte versuche es später erneut.",
-
     selTitle: "Meine Teams",
     selFollowed: "verfolgt",
     selToggleHint: "tippen zum Umschalten",
     selClearAll: "Alle entfernen",
     selDefault: "Standard",
     selDone: "Fertig",
-
     teamSquad: "Kader",
     teamMatches: "Spiele",
     teamSquadNA: "Kader noch nicht verfügbar.",
@@ -330,17 +273,14 @@ const strings = {
     posD: "Abwehr",
     posM: "Mittelfeld",
     posF: "Angriff",
-
     loadingMatches: "Spiele werden geladen…",
     retry: "Erneut versuchen",
     errorTitle: "Daten konnten nicht geladen werden",
-
     group: "Gruppe",
     matchdayAbbr: "ST",
     relToday: "Heute",
     relTomorrow: "Morgen",
     language: "Sprache",
-
     predChampion: "Weltmeister",
     predTopScorer: "Torschützenkönig",
     predGroups: "Gruppen",
@@ -349,14 +289,11 @@ const strings = {
     predEmptyHint: "Später erneut versuchen – der Markt ist möglicherweise noch nicht verfügbar.",
     predWinProb: "Siegwahrscheinlichkeit · Polymarket",
     draw: "Unentschieden",
-
     thirdTitle: "Beste Drittplatzierte",
     thirdHint: "Top 8 kommen weiter",
-
     segGroups: "Gruppen",
     segKnockout: "K.o.-Runde",
     bracketEmpty: "Der Spielplan wird nach der Gruppenphase ausgefüllt.",
-
     thirdPlaceShort: "3. Platz",
     teamPredTitle: "Prognosen · Polymarket",
     predAdvance: "Weiterkommen",
@@ -365,25 +302,24 @@ const strings = {
     marketFavourite: "Marktfavorit",
     marketTossUp: "Sehr ausgeglichen",
   },
-};
+} as const;
 
 const STORAGE_KEY = "wc2026:lang";
 
-export function getStoredLang() {
+export function getStoredLang(): Lang {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && strings[stored]) return stored;
+    if (stored && stored in strings) return stored as Lang;
   } catch {
     // ignore
   }
-  // Detect from browser
   const lang = navigator.language?.slice(0, 2).toLowerCase();
   if (lang === "de") return "de";
   if (lang === "es") return "es";
   return "en";
 }
 
-export function storeLang(lang) {
+export function storeLang(lang: Lang): void {
   try {
     localStorage.setItem(STORAGE_KEY, lang);
   } catch {
@@ -391,11 +327,11 @@ export function storeLang(lang) {
   }
 }
 
-export function t(lang, key) {
-  return strings[lang]?.[key] ?? strings.en[key] ?? key;
+export function t(lang: Lang, key: StringKey): string {
+  return (strings[lang] as Record<string, string>)[key] ?? (strings.en as Record<string, string>)[key] ?? key;
 }
 
-export const LANGS = ["en", "de", "es"];
-export const LANG_LABELS = { es: "Español", en: "English", de: "Deutsch" };
+export const LANGS: Lang[] = ["en", "de", "es"];
+export const LANG_LABELS: Record<Lang, string> = { es: "Español", en: "English", de: "Deutsch" };
 
 export default strings;

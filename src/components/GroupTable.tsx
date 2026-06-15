@@ -1,7 +1,15 @@
-import FlagIcon from "./FlagIcon.jsx";
-import { t } from "../i18n.js";
+import FlagIcon from "./FlagIcon";
+import { t } from "../i18n";
+import type { StandingRow, Lang } from "../types";
 
-export default function GroupTable({ groupName, standings, lang, onTeamClick }) {
+interface GroupTableProps {
+  groupName: string;
+  standings: StandingRow[];
+  lang: Lang;
+  onTeamClick?: (name: string) => void;
+}
+
+export default function GroupTable({ groupName, standings, lang, onTeamClick }: GroupTableProps) {
   if (!standings?.length) return null;
 
   return (
@@ -25,11 +33,7 @@ export default function GroupTable({ groupName, standings, lang, onTeamClick }) 
           </thead>
           <tbody>
             {standings.map((row, idx) => {
-              let rowClass = "";
-              if (idx < 2) rowClass = "qualify";
-              else if (idx === 2) rowClass = "third";
-              else rowClass = "out";
-
+              const rowClass = idx < 2 ? "qualify" : idx === 2 ? "third" : "out";
               return (
                 <tr
                   key={row.team}

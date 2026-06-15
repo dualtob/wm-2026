@@ -1,15 +1,15 @@
 import { useState } from "react";
-import GroupTable from "./GroupTable.jsx";
-import FlagIcon from "./FlagIcon.jsx";
-import { t } from "../i18n.js";
+import GroupTable from "./GroupTable";
+import FlagIcon from "./FlagIcon";
+import { t } from "../i18n";
+import type { Match, Standings, StandingRow, Lang } from "../types";
 
-// Sort best third-place teams across all groups
-function getBestThirds(standings) {
-  const thirds = [];
+type ThirdRow = StandingRow & { group: string };
+
+function getBestThirds(standings: Standings): ThirdRow[] {
+  const thirds: ThirdRow[] = [];
   for (const [groupName, rows] of Object.entries(standings)) {
-    if (rows[2]) {
-      thirds.push({ ...rows[2], group: groupName });
-    }
+    if (rows[2]) thirds.push({ ...rows[2], group: groupName });
   }
   return thirds
     .sort((a, b) => {
@@ -21,31 +21,27 @@ function getBestThirds(standings) {
     .slice(0, 8);
 }
 
-// Simple knockout bracket display for WC 2026 (Round of 32 → Final)
-function KnockoutBracket({ matches, lang }) {
-  const knockoutMatches = matches.filter(
-    (m) => !m.group && !m.isPlaceholder
-  );
+const ROUND_ORDER = [
+  "Round of 32",
+  "Round of 16",
+  "Quarter-finals",
+  "Semi-finals",
+  "Third place",
+  "Final",
+];
 
-  const rounds = {};
+function KnockoutBracket({ matches, lang }: { matches: Match[]; lang: Lang }) {
+  const knockoutMatches = matches.filter((m) => !m.group && !m.isPlaceholder);
+  const rounds: Record<string, Match[]> = {};
   for (const m of knockoutMatches) {
     const stage = m.stage || "Unknown";
     if (!rounds[stage]) rounds[stage] = [];
     rounds[stage].push(m);
   }
 
-  const roundOrder = [
-    "Round of 32",
-    "Round of 16",
-    "Quarter-finals",
-    "Semi-finals",
-    "Third place",
-    "Final",
-  ];
-
   const sortedRounds = Object.keys(rounds).sort((a, b) => {
-    const ia = roundOrder.findIndex((r) => a.includes(r));
-    const ib = roundOrder.findIndex((r) => b.includes(r));
+    const ia = ROUND_ORDER.findIndex((r) => a.includes(r));
+    const ib = ROUND_ORDER.findIndex((r) => b.includes(r));
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
   });
 
@@ -84,15 +80,20 @@ function KnockoutBracket({ matches, lang }) {
   );
 }
 
-export default function Groups({ standings, matches, lang, onTeamClick }) {
-  const [segment, setSegment] = useState("groups");
+interface GroupsProps {
+  standings: Standings;
+  matches: Match[];
+  lang: Lang;
+  onTeamClick?: (name: string) => void;
+}
 
+export default function Groups({ standings, matches, lang, onTeamClick }: GroupsProps) {
+  const [segment, setSegment] = useState<"groups" | "knockout">("groups");
   const sortedGroups = Object.keys(standings).sort();
   const bestThirds = getBestThirds(standings);
 
   return (
     <div className="groups-view">
-      {/* Segment control */}
       <div className="segment-control" role="tablist">
         <button
           role="tab"
@@ -124,7 +125,6 @@ export default function Groups({ standings, matches, lang, onTeamClick }) {
             />
           ))}
 
-          {/* Best thirds section */}
           {bestThirds.length > 0 && (
             <div className="best-thirds">
               <h3 className="best-thirds__title">{t(lang, "thirdTitle")}</h3>
@@ -170,9 +170,7 @@ export default function Groups({ standings, matches, lang, onTeamClick }) {
         </div>
       )}
 
-      {segment === "knockout" && (
-        <KnockoutBracket matches={matches} lang={lang} />
-      )}
+      {segment === "knockout" && <KnockoutBracket matches={matches} lang={lang} />}
     </div>
   );
 }

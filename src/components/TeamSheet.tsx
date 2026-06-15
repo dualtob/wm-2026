@@ -1,12 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
-import FlagIcon from "./FlagIcon.jsx";
-import MatchCard from "./MatchCard.jsx";
-import { fetchTeamRoster } from "../api/espn.js";
-import { fetchTeamOdds } from "../api/polymarket.js";
-import { getTeam } from "../teams.js";
-import { t } from "../i18n.js";
+import { useState, useCallback } from "react";
+import FlagIcon from "./FlagIcon";
+import MatchCard from "./MatchCard";
+import { getTeam } from "../teams";
+import { t } from "../i18n";
+import { useTeamRoster } from "../hooks/useTeamRoster";
+import { useTeamOdds } from "../hooks/useTeamOdds";
+import type { Match, RosterGroup, TeamOdds, Lang } from "../types";
 
-function OddsBar({ label, probability }) {
+interface OddsBarProps {
+  label: string;
+  probability: number | null | undefined;
+}
+
+function OddsBar({ label, probability }: OddsBarProps) {
   if (probability === null || probability === undefined) return null;
   const pct = Math.round(probability * 100);
   return (
@@ -20,7 +26,12 @@ function OddsBar({ label, probability }) {
   );
 }
 
-function SquadSection({ title, players }) {
+interface SquadSectionProps {
+  title: string;
+  players: RosterGroup[keyof RosterGroup];
+}
+
+function SquadSection({ title, players }: SquadSectionProps) {
   if (!players?.length) return null;
   return (
     <div className="squad-section">
@@ -28,7 +39,7 @@ function SquadSection({ title, players }) {
       <div className="squad-list">
         {players.map((p) => (
           <div key={p.id || p.name} className="squad-player">
-            <span className="squad-player__jersey">#{p.jersey || "–"}</span>
+            <span className="squad-player__jersey">#{p.jersey ?? "–"}</span>
             {p.headshot && (
               <img
                 className="squad-player__headshot"
@@ -37,7 +48,9 @@ function SquadSection({ title, players }) {
                 width={32}
                 height={32}
                 loading="lazy"
-                onError={(e) => { e.currentTarget.style.display = "none"; }}
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
               />
             )}
             <div className="squad-player__info">
@@ -51,54 +64,70 @@ function SquadSection({ title, players }) {
   );
 }
 
-export default function TeamSheet({ teamName, matches, lang, myTeams, onToggleMyTeam, onClose, onMatchClick }) {
-  const [activeTab, setActiveTab] = useState("squad");
-  const [roster, setRoster] = useState(null);
-  const [rosterLoading, setRosterLoading] = useState(false);
-  const [odds, setOdds] = useState(null);
+interface TeamSheetProps {
+  teamName: string;
+  matches: Match[];
+  lang: Lang;
+  myTeams: string[];
+  onToggleMyTeam?: (name: string) => void;
+  onClose: () => void;
+  onMatchClick?: (match: Match) => void;
+}
+
+export default function TeamSheet({
+  teamName,
+  matches,
+  lang,
+  myTeams,
+  onToggleMyTeam,
+  onClose,
+  onMatchClick,
+}: TeamSheetProps) {
+  const [activeTab, setActiveTab] = useState<"squad" | "matches">("squad");
+
   const team = getTeam(teamName);
   const teamColor = team ? `#${team.color}` : "#0a9d72";
   const isFollowing = myTeams?.includes(teamName);
 
-  const teamMatches = matches.filter(
-    (m) => m.team1.name === teamName || m.team2.name === teamName
-  ).sort((a, b) => (a.kickoff || 0) - (b.kickoff || 0));
+  const { data: roster, isLoading: rosterLoading } = useTeamRoster(
+    activeTab === "squad" ? team?.espnId : null
+  );
+  const { data: odds } = useTeamOdds(teamName);
 
-  // Load roster when squad tab active
-  useEffect(() => {
-    if (activeTab !== "squad" || !team?.espnId) return;
-    if (roster !== null) return;
+  const teamMatches = matches
+    .filter((m) => m.team1.name === teamName || m.team2.name === teamName)
+    .sort((a, b) => (a.kickoff?.getTime() ?? 0) - (b.kickoff?.getTime() ?? 0));
 
-    setRosterLoading(true);
-    fetchTeamRoster(team.espnId)
-      .then((data) => {
-        setRoster(data);
-        setRosterLoading(false);
-      })
-      .catch(() => {
-        setRoster(null);
-        setRosterLoading(false);
-      });
-  }, [activeTab, team?.espnId]);
+  const handleBackdropClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.target === e.currentTarget) onClose();
+    },
+    [onClose]
+  );
 
-  // Load Polymarket odds
-  useEffect(() => {
-    fetchTeamOdds(teamName)
-      .then(setOdds)
-      .catch(() => setOdds(null));
-  }, [teamName]);
-
-  const handleBackdropClick = useCallback((e) => {
-    if (e.target === e.currentTarget) onClose();
-  }, [onClose]);
+  const oddsData = odds as TeamOdds | null | undefined;
 
   return (
-    <div className="sheet-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-label={teamName}>
+    <div
+      className="sheet-backdrop"
+      onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-label={teamName}
+    >
       <div className="team-sheet">
-        {/* Header */}
-        <div className="team-sheet__header" style={{ "--team-color": teamColor }}>
+        <div
+          className="team-sheet__header"
+          style={{ "--team-color": teamColor } as React.CSSProperties}
+        >
           <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
@@ -116,21 +145,22 @@ export default function TeamSheet({ teamName, matches, lang, myTeams, onToggleMy
           </button>
         </div>
 
-        {/* Polymarket odds */}
-        {odds && (odds.advance !== null || odds.winGroup !== null || odds.reachFinal !== null) && (
-          <div className="team-odds">
-            <h3 className="team-odds__title">{t(lang, "teamPredTitle")}</h3>
-            <OddsBar label={t(lang, "predAdvance")} probability={odds.advance} />
-            <OddsBar label={t(lang, "predWinGroup")} probability={odds.winGroup} />
-            <OddsBar label={t(lang, "predReachFinal")} probability={odds.reachFinal} />
-            {odds.winChampion !== null && (
-              <OddsBar label={t(lang, "predChampion")} probability={odds.winChampion} />
-            )}
-            <p className="team-odds__attribution">{t(lang, "predAttribution")}</p>
-          </div>
-        )}
+        {oddsData &&
+          (oddsData.advance !== null ||
+            oddsData.winGroup !== null ||
+            oddsData.reachFinal !== null) && (
+            <div className="team-odds">
+              <h3 className="team-odds__title">{t(lang, "teamPredTitle")}</h3>
+              <OddsBar label={t(lang, "predAdvance")} probability={oddsData.advance} />
+              <OddsBar label={t(lang, "predWinGroup")} probability={oddsData.winGroup} />
+              <OddsBar label={t(lang, "predReachFinal")} probability={oddsData.reachFinal} />
+              {oddsData.winChampion !== null && (
+                <OddsBar label={t(lang, "predChampion")} probability={oddsData.winChampion} />
+              )}
+              <p className="team-odds__attribution">{t(lang, "predAttribution")}</p>
+            </div>
+          )}
 
-        {/* Tabs */}
         <div className="segment-control" role="tablist">
           <button
             role="tab"
@@ -150,7 +180,6 @@ export default function TeamSheet({ teamName, matches, lang, myTeams, onToggleMy
           </button>
         </div>
 
-        {/* Squad tab */}
         {activeTab === "squad" && (
           <div className="team-sheet__content">
             {rosterLoading ? (
@@ -158,7 +187,7 @@ export default function TeamSheet({ teamName, matches, lang, myTeams, onToggleMy
                 <div className="spinner" />
                 <p>{t(lang, "teamSquadLoading")}</p>
               </div>
-            ) : !roster || (Object.values(roster).every((arr) => arr.length === 0)) ? (
+            ) : !roster || Object.values(roster).every((arr) => arr.length === 0) ? (
               <p className="empty-hint">{t(lang, "teamSquadNA")}</p>
             ) : (
               <>
@@ -171,7 +200,6 @@ export default function TeamSheet({ teamName, matches, lang, myTeams, onToggleMy
           </div>
         )}
 
-        {/* Matches tab */}
         {activeTab === "matches" && (
           <div className="team-sheet__content">
             {teamMatches.length === 0 ? (

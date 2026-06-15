@@ -233,7 +233,7 @@ export default function App() {
             {activeTab === "calendar" && (
               <div className="tab-panel">
                 <MatchList
-                  matches={matches.filter((m) => !m.isPlaceholder)}
+                  matches={matches.filter((m) => !m.isPlaceholder && !m.played && !m.isLive)}
                   lang={lang}
                   myTeams={myTeams}
                   showFilter={false}

@@ -34,8 +34,10 @@
 
   --nav-height: 60px;
   --header-height: 56px;
+  --subtab-height: 45px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
+  --sticky-top: calc(var(--header-height) + var(--safe-top));
 
   --radius-sm: 6px;
   --radius-md: 12px;
@@ -365,7 +367,7 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--border);
   background: var(--bg-header);
   position: sticky;
-  top: 0;
+  top: var(--sticky-top);
   z-index: 90;
 }
 
@@ -402,7 +404,7 @@ h1, h2, h3, h4 {
 /* ---------- Segment Control ---------- */
 .segment-control {
   display: flex;
-  margin: 12px 16px;
+  margin: 14px 14px 12px;
   background: var(--bg-input);
   border-radius: var(--radius-md);
   padding: 3px;
@@ -429,7 +431,7 @@ h1, h2, h3, h4 {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 10px 0;
 }
 
 .filter-btn {
@@ -460,36 +462,34 @@ h1, h2, h3, h4 {
 
 /* ---------- Match List ---------- */
 .match-list {
-  padding-bottom: 8px;
+  padding: 0 14px 20px;
 }
 
 .date-group {
-  margin-bottom: 4px;
+  margin-bottom: 14px;
 }
 
 .date-group__header {
-  padding: 8px 16px 4px;
+  padding: 18px 0 8px;
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   position: sticky;
-  top: 45px; /* below the subtab bar (~45px tall) */
+  top: calc(var(--sticky-top) + var(--subtab-height));
   background: var(--bg);
   z-index: 80;
 }
 
-/* Calendar tab has no subtab bar, so date headers stick at the very top */
 .match-list--calendar .date-group__header {
-  top: 0;
+  top: var(--sticky-top);
 }
 
 .date-group__matches {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 0 12px;
+  gap: 8px;
 }
 
 /* ---------- Match Card ---------- */
@@ -659,14 +659,13 @@ h1, h2, h3, h4 {
 
 /* ---------- Group Table ---------- */
 .groups-view {
-  padding-bottom: 16px;
+  padding: 0 14px 20px;
 }
 
 .groups-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 0 12px 16px;
+  gap: 14px;
 }
 
 .group-table {
@@ -888,14 +887,14 @@ h1, h2, h3, h4 {
 
 /* ---------- Stats View ---------- */
 .stats-view {
-  padding-bottom: 16px;
+  padding: 0 14px 20px;
 }
 
 .player-list {
-  padding: 8px 12px;
+  padding: 8px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .player-row {
@@ -1449,7 +1448,7 @@ h1, h2, h3, h4 {
 
 /* ---------- Champion Odds ---------- */
 .champion-odds {
-  margin: 16px 12px;
+  margin: 14px 0;
   background: var(--bg-card);
   border-radius: var(--radius-md);
   border: 1px solid var(--border);

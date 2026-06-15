@@ -6,22 +6,7 @@ import {
   ESPN_CDN_URL,
   LS_SCOREBOARD_KEY,
 } from "../constants";
-
-function lsGet(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function lsSet(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // ignore quota errors
-  }
-}
+import { lsGet, lsSet } from "../utils/storage";
 
 export async function fetchScoreboard(): Promise<unknown[]> {
   const url = `${ESPN_SCOREBOARD_URL}&_=${Date.now()}`;

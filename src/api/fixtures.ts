@@ -7,22 +7,7 @@ import {
   LS_FIXTURES_KEY,
   LS_FIXTURES_AT_KEY,
 } from "../constants";
-
-function lsGet(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function lsSet(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // ignore quota errors
-  }
-}
+import { lsGet, lsSet } from "../utils/storage";
 
 type RawMatch = {
   round?: string;

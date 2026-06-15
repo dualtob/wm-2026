@@ -1,21 +1,6 @@
 import type { MarketOdds, Outcome, TeamOdds } from "../types";
-import { POLYMARKET_BASE, POLYMARKET_CACHE_TTL, LS_PM_PREFIX, LS_PM_TREND_PREFIX } from "../constants";
-
-function lsGet(key: string): string | null {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function lsSet(key: string, value: string): void {
-  try {
-    localStorage.setItem(key, value);
-  } catch {
-    // ignore
-  }
-}
+import { POLYMARKET_BASE, LS_PM_PREFIX, LS_PM_TREND_PREFIX } from "../constants";
+import { lsGet, lsSet } from "../utils/storage";
 
 export function normalizeForPolymarket(name: string): string {
   if (!name) return "";
@@ -48,28 +33,28 @@ type RawMarket = {
   outcomes?: Array<{ outcome?: string; name?: string; title?: string; probability?: string | number }>;
 };
 
+// Network-first: always attempt fetch, fall back to localStorage only on failure.
+// TanStack Query's staleTime handles cache timing — no TTL check here.
 async function searchMarkets(query: string): Promise<RawMarket[] | null> {
   const cacheKey = `${LS_PM_PREFIX}search:${query}`;
-  const cached = lsGet(cacheKey);
-  if (cached) {
-    try {
-      const { data, ts } = JSON.parse(cached) as { data: RawMarket[]; ts: number };
-      if (Date.now() - ts < POLYMARKET_CACHE_TTL) return data;
-    } catch {
-      // ignore
-    }
-  }
-
   try {
     const url = `${POLYMARKET_BASE}/markets?search=${encodeURIComponent(query)}&active=true&limit=50`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw = await res.json();
     const data: RawMarket[] = Array.isArray(raw) ? raw : (raw as { markets?: RawMarket[] }).markets ?? [];
-    lsSet(cacheKey, JSON.stringify({ data, ts: Date.now() }));
+    lsSet(cacheKey, JSON.stringify(data));
     return data;
   } catch (err) {
     console.warn(`Polymarket search failed for "${query}":`, (err as Error).message);
+    const cached = lsGet(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached) as RawMarket[];
+      } catch {
+        // ignore
+      }
+    }
     return null;
   }
 }
@@ -113,7 +98,6 @@ export async function fetchMatchOdds(
 ): Promise<MarketOdds | null> {
   const markets = await searchMarkets(`${team1Name} vs ${team2Name} 2026 World Cup`);
   if (!markets?.length) return null;
-
   const t1 = team1Name.toLowerCase();
   const t2 = team2Name.toLowerCase();
   const market =
@@ -121,7 +105,6 @@ export async function fetchMatchOdds(
       const title = (m.question ?? m.title ?? "").toLowerCase();
       return title.includes(t1) && title.includes(t2);
     }) ?? markets[0];
-
   if (!market) return null;
   return {
     market: market.question ?? market.title ?? "",
@@ -133,25 +116,22 @@ export async function fetchMatchOdds(
 export async function fetchTeamOdds(teamName: string): Promise<TeamOdds | null> {
   const slug = normalizeForPolymarket(teamName);
   const cacheKey = `${LS_PM_TREND_PREFIX}${slug}`;
-  const cached = lsGet(cacheKey);
-  if (cached) {
-    try {
-      const { data, ts } = JSON.parse(cached) as { data: TeamOdds; ts: number };
-      if (Date.now() - ts < POLYMARKET_CACHE_TTL) return data;
-    } catch {
-      // ignore
-    }
-  }
 
   const markets = await searchMarkets(`${teamName} 2026 World Cup`);
-  if (!markets) return null;
+  if (!markets) {
+    // Try stale localStorage on total failure
+    const cached = lsGet(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached) as TeamOdds;
+      } catch {
+        // ignore
+      }
+    }
+    return null;
+  }
 
-  const result: TeamOdds = {
-    advance: null,
-    winGroup: null,
-    reachFinal: null,
-    winChampion: null,
-  };
+  const result: TeamOdds = { advance: null, winGroup: null, reachFinal: null, winChampion: null };
 
   for (const m of markets) {
     const title = (m.question ?? m.title ?? "").toLowerCase();
@@ -170,6 +150,6 @@ export async function fetchTeamOdds(teamName: string): Promise<TeamOdds | null> 
     }
   }
 
-  lsSet(cacheKey, JSON.stringify({ data: result, ts: Date.now() }));
+  lsSet(cacheKey, JSON.stringify(result));
   return result;
 }

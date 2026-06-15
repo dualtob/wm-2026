@@ -1,0 +1,160 @@
+// Complete team data for FIFA World Cup 2026 (48 teams)
+export const TEAMS = {
+  Algeria: { espnId: "624", abbr: "ALG", color: "5bbd19" },
+  Argentina: { espnId: "202", abbr: "ARG", color: "74acdf" },
+  Australia: { espnId: "628", abbr: "AUS", color: "2a2d7c" },
+  Austria: { espnId: "474", abbr: "AUT", color: "d72b2c" },
+  Belgium: { espnId: "459", abbr: "BEL", color: "ef3340" },
+  "Bosnia & Herzegovina": { espnId: "452", abbr: "BIH", color: "112855" },
+  Brazil: { espnId: "205", abbr: "BRA", color: "fee000" },
+  Canada: { espnId: "206", abbr: "CAN", color: "ed2224" },
+  "Cape Verde": { espnId: "2597", abbr: "CPV", color: "0000ff" },
+  Colombia: { espnId: "208", abbr: "COL", color: "fbd632" },
+  "DR Congo": { espnId: "2850", abbr: "COD", color: "418fde" },
+  Croatia: { espnId: "477", abbr: "CRO", color: "ff0000" },
+  Curaçao: { espnId: "11678", abbr: "CUW", color: "0537e4" },
+  "Czech Republic": { espnId: "450", abbr: "CZE", color: "d7141a" },
+  Ecuador: { espnId: "209", abbr: "ECU", color: "ffdd00" },
+  Egypt: { espnId: "2620", abbr: "EGY", color: "d20300" },
+  England: { espnId: "448", abbr: "ENG", color: "ffffff" },
+  France: { espnId: "478", abbr: "FRA", color: "0c2fff" },
+  Germany: { espnId: "481", abbr: "GER", color: "000000" },
+  Ghana: { espnId: "4469", abbr: "GHA", color: "ce2931" },
+  Haiti: { espnId: "2654", abbr: "HAI", color: "0033a0" },
+  Iran: { espnId: "469", abbr: "IRN", color: "da0000" },
+  Iraq: { espnId: "4375", abbr: "IRQ", color: "00843d" },
+  "Ivory Coast": { espnId: "4789", abbr: "CIV", color: "d48c00" },
+  Japan: { espnId: "627", abbr: "JPN", color: "ed1c24" },
+  Jordan: { espnId: "2917", abbr: "JOR", color: "e70000" },
+  Mexico: { espnId: "203", abbr: "MEX", color: "006847" },
+  Morocco: { espnId: "2869", abbr: "MAR", color: "009060" },
+  Netherlands: { espnId: "449", abbr: "NED", color: "fb5d00" },
+  "New Zealand": { espnId: "2666", abbr: "NZL", color: "273476" },
+  Norway: { espnId: "464", abbr: "NOR", color: "ef2b2d" },
+  Panama: { espnId: "2659", abbr: "PAN", color: "d21034" },
+  Paraguay: { espnId: "210", abbr: "PAR", color: "ea2300" },
+  Portugal: { espnId: "482", abbr: "POR", color: "da291c" },
+  Qatar: { espnId: "4398", abbr: "QAT", color: "691a40" },
+  "Saudi Arabia": { espnId: "655", abbr: "KSA", color: "dddddd" },
+  Scotland: { espnId: "580", abbr: "SCO", color: "1a2d69" },
+  Senegal: { espnId: "654", abbr: "SEN", color: "00853f" },
+  "South Africa": { espnId: "467", abbr: "RSA", color: "087d5a" },
+  "South Korea": { espnId: "451", abbr: "KOR", color: "ce2028" },
+  Spain: { espnId: "164", abbr: "ESP", color: "c60b1e" },
+  Sweden: { espnId: "466", abbr: "SWE", color: "fecb00" },
+  Switzerland: { espnId: "475", abbr: "SUI", color: "d72b2c" },
+  Tunisia: { espnId: "659", abbr: "TUN", color: "d20300" },
+  Turkey: { espnId: "465", abbr: "TUR", color: "ffffff" },
+  USA: { espnId: "660", abbr: "USA", color: "213065" },
+  Uruguay: { espnId: "212", abbr: "URU", color: "003da5" },
+  Uzbekistan: { espnId: "2570", abbr: "UZB", color: "0081d6" },
+};
+
+// Normalize team name from various API sources to our TEAMS keys
+export function normalizeTeamName(name) {
+  if (!name) return name;
+  const map = {
+    "United States": "USA",
+    "United States of America": "USA",
+    "US": "USA",
+    "Korea Republic": "South Korea",
+    "Republic of Korea": "South Korea",
+    "South Korea": "South Korea",
+    "Côte d'Ivoire": "Ivory Coast",
+    "Cote d'Ivoire": "Ivory Coast",
+    "côte d'ivoire": "Ivory Coast",
+    "Bosnia and Herzegovina": "Bosnia & Herzegovina",
+    "Bosnia-Herzegovina": "Bosnia & Herzegovina",
+    "Czech Republic": "Czech Republic",
+    "Czechia": "Czech Republic",
+    "DRC": "DR Congo",
+    "Congo DR": "DR Congo",
+    "Democratic Republic of Congo": "DR Congo",
+    "New Zealand": "New Zealand",
+    "Saudi Arabia": "Saudi Arabia",
+    "Cape Verde": "Cape Verde",
+    "Cabo Verde": "Cape Verde",
+    "Curacao": "Curaçao",
+    "Curaçao": "Curaçao",
+  };
+  return map[name] || name;
+}
+
+// Get team data by name (with normalization)
+export function getTeam(name) {
+  const normalized = normalizeTeamName(name);
+  return TEAMS[normalized] || null;
+}
+
+// Get flag code for circle-flags CDN
+// Maps team names to ISO 3166-1 alpha-2 codes
+export function getFlagCode(teamName) {
+  const normalized = normalizeTeamName(teamName);
+  const flagMap = {
+    Algeria: "dz",
+    Argentina: "ar",
+    Australia: "au",
+    Austria: "at",
+    Belgium: "be",
+    "Bosnia & Herzegovina": "ba",
+    Brazil: "br",
+    Canada: "ca",
+    "Cape Verde": "cv",
+    Colombia: "co",
+    "DR Congo": "cd",
+    Croatia: "hr",
+    "Curaçao": "cw",
+    "Czech Republic": "cz",
+    Ecuador: "ec",
+    Egypt: "eg",
+    England: "gb-eng",
+    France: "fr",
+    Germany: "de",
+    Ghana: "gh",
+    Haiti: "ht",
+    Iran: "ir",
+    Iraq: "iq",
+    "Ivory Coast": "ci",
+    Japan: "jp",
+    Jordan: "jo",
+    Mexico: "mx",
+    Morocco: "ma",
+    Netherlands: "nl",
+    "New Zealand": "nz",
+    Norway: "no",
+    Panama: "pa",
+    Paraguay: "py",
+    Portugal: "pt",
+    Qatar: "qa",
+    "Saudi Arabia": "sa",
+    Scotland: "gb-sct",
+    Senegal: "sn",
+    "South Africa": "za",
+    "South Korea": "kr",
+    Spain: "es",
+    Sweden: "se",
+    Switzerland: "ch",
+    Tunisia: "tn",
+    Turkey: "tr",
+    USA: "us",
+    Uruguay: "uy",
+    Uzbekistan: "uz",
+  };
+  return flagMap[normalized] || normalized.toLowerCase().replace(/\s+/g, "-");
+}
+
+// Get team color as CSS variable-friendly hex
+export function getTeamColor(teamName) {
+  const team = getTeam(teamName);
+  return team ? `#${team.color}` : "#888888";
+}
+
+// Build ESPN roster URL
+export function espnRosterUrl(espnId) {
+  return `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/teams/${espnId}/roster`;
+}
+
+// Build ESPN player headshot URL
+export function espnHeadshotUrl(playerId) {
+  return `https://a.espncdn.com/i/headshots/soccer/players/full/${playerId}.png`;
+}

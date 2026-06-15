@@ -34,7 +34,7 @@
 
   --nav-height: 60px;
   --header-height: 56px;
-  --safe-bottom: 0px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
 
   --radius-sm: 6px;
@@ -66,15 +66,6 @@
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  }
-}
-
-/* In browser mode (non-PWA), dvh already excludes browser chrome so --safe-bottom
-   stays 0. Only in standalone/fullscreen (installed PWA) do we need the home
-   indicator inset, because there the viewport extends to the physical screen edge. */
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  :root {
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
 
@@ -136,20 +127,17 @@ h1, h2, h3, h4 {
 
 /* ---------- App Layout ---------- */
 .app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  height: -webkit-fill-available;
-  height: 100dvh;
   max-width: 640px;
+  min-height: 100dvh;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
 }
 
 /* ---------- Header ---------- */
 .app-header {
-  flex-shrink: 0;
+  position: sticky;
+  top: 0;
   z-index: 100;
   background: var(--bg-header);
   border-bottom: 1px solid var(--border);
@@ -253,9 +241,6 @@ h1, h2, h3, h4 {
 
 /* ---------- Main Content ---------- */
 .app-main {
-  flex: 1;
-  min-height: 0; /* required for overflow-y: auto in a flex child */
-  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -310,11 +295,17 @@ h1, h2, h3, h4 {
 
 /* ---------- Bottom Navigation ---------- */
 .nav-bar {
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 640px;
   z-index: 100;
   background: var(--bg-nav);
   border-top: 1px solid var(--border);
   display: flex;
+  height: calc(var(--nav-height) + var(--safe-bottom));
   padding-bottom: var(--safe-bottom);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
 }

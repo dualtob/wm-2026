@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";
 import type { Match, Lang } from "../types";
@@ -29,6 +30,24 @@ export default function MatchCard({
     match;
 
   const isMyMatch = myTeams.includes(team1.name) || myTeams.includes(team2.name);
+
+  // Pulse the side whose score just increased
+  const prev = useRef(score);
+  const [flash, setFlash] = useState<"home" | "away" | null>(null);
+  useEffect(() => {
+    if (!score) {
+      prev.current = score;
+      return;
+    }
+    const p = prev.current;
+    if (p && score.home > p.home) setFlash("home");
+    else if (p && score.away > p.away) setFlash("away");
+    prev.current = score;
+    if (flash) {
+      const id = setTimeout(() => setFlash(null), 900);
+      return () => clearTimeout(id);
+    }
+  }, [score, flash]);
 
   const statusLabel = isLive
     ? liveMinute || t(lang, "live")
@@ -76,11 +95,15 @@ export default function MatchCard({
         <div className="match-card__center">
           {(isLive || played) && score !== null && score !== undefined ? (
             <div className="match-card__score">
-              <span className={`match-card__score-num${score.home > score.away ? " match-card__score-num--win" : ""}`}>
+              <span
+                className={`match-card__score-num${score.home > score.away ? " match-card__score-num--win" : ""}${flash === "home" ? " match-card__score-num--flash" : ""}`}
+              >
                 {score.home}
               </span>
               <span className="match-card__score-sep">–</span>
-              <span className={`match-card__score-num${score.away > score.home ? " match-card__score-num--win" : ""}`}>
+              <span
+                className={`match-card__score-num${score.away > score.home ? " match-card__score-num--win" : ""}${flash === "away" ? " match-card__score-num--flash" : ""}`}
+              >
                 {score.away}
               </span>
             </div>

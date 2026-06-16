@@ -1680,6 +1680,99 @@ h1, h2, h3, h4 {
   background: var(--color-third);
 }
 
+/* ---------- Lineup tab (Phase 3) ---------- */
+.lp-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.lp-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lp-col__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 6px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.lp-col__formation {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+}
+
+.lp-group__label {
+  margin: 6px 0 2px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.lp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  font-size: 0.86rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  width: 100%;
+  text-align: left;
+}
+
+.lp-row--btn {
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  font: inherit;
+  color: inherit;
+}
+
+.lp-row--btn:hover {
+  background: var(--bg-input);
+  border-color: var(--accent);
+}
+
+.lp-jersey {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  min-width: 22px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.lp-name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lp-pos {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.03em;
+}
+
 /* ---------- Settings Modal ---------- */
 .settings-modal {
   background: var(--bg-modal);

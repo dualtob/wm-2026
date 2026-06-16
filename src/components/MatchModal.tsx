@@ -4,7 +4,8 @@ import { useSettings } from "../contexts/SettingsContext";
 import { useMatchGoals } from "../hooks/useMatchDetail";
 import { useMatchSummary } from "../hooks/useMatchSummary";
 import { t } from "../i18n";
-import type { Match, MatchEvent, EventKind, MatchStats, TeamStats } from "../types";
+import type { Match, MatchEvent, EventKind, MatchStats, TeamStats, MatchLineup, LineupPlayer } from "../types";
+import { ESPN_CDN_URL } from "../constants";
 import { TZ } from "../constants";
 
 // ─── Raw ESPN detail shape ──────────────────────────────────────────────────
@@ -298,6 +299,185 @@ export function StatsTab({ match }: { match: Match }) {
   );
 }
 
+// ─── Lineup parsing (Phase 3) ───────────────────────────────────────────────
+
+type RawRosterAthlete = {
+  athlete?: {
+    id?: string;
+    displayName?: string;
+    fullName?: string;
+    jersey?: string;
+    position?: { name?: string; abbreviation?: string; displayName?: string };
+    headshot?: { href?: string };
+  };
+  starter?: boolean;
+  position?: { name?: string; abbreviation?: string; displayName?: string };
+  jersey?: string;
+};
+
+type RawRosterTeam = {
+  homeAway?: string;
+  team?: { id?: string };
+  formation?: string;
+  roster?: RawRosterAthlete[];
+};
+
+function parseLineupPlayer(entry: RawRosterAthlete): LineupPlayer {
+  const a = entry.athlete ?? {};
+  const pos = entry.position ?? a.position;
+  const jersey = entry.jersey ?? a.jersey ?? null;
+  return {
+    id: String(a.id ?? ""),
+    name: String(a.displayName ?? a.fullName ?? "?"),
+    jersey: jersey != null ? String(jersey) : null,
+    position: String(pos?.abbreviation ?? pos?.displayName ?? pos?.name ?? "?"),
+    starter: !!entry.starter,
+    headshot: a.headshot?.href ?? (a.id ? `${ESPN_CDN_URL}/${a.id}.png` : null),
+  };
+}
+
+export function parseMatchLineup(
+  summary: unknown,
+  homeEspnId: string | null | undefined
+): MatchLineup | null {
+  const rosters = (summary as { rosters?: RawRosterTeam[] })?.rosters;
+  if (!rosters || rosters.length < 2) return null;
+  const home = rosters.find(
+    (r) => r.homeAway === "home" || (homeEspnId && r.team?.id === homeEspnId)
+  );
+  const away = rosters.find(
+    (r) => r.homeAway === "away" || (homeEspnId && r.team?.id !== homeEspnId)
+  );
+  if (!home?.roster?.length || !away?.roster?.length) return null;
+  return {
+    home: home.roster.map(parseLineupPlayer),
+    away: away.roster.map(parseLineupPlayer),
+    homeFormation: home.formation ?? null,
+    awayFormation: away.formation ?? null,
+  };
+}
+
+// ─── Lineup tab (Phase 3) ───────────────────────────────────────────────────
+
+function PlayerRow({
+  player,
+  onClick,
+}: {
+  player: LineupPlayer;
+  onClick?: () => void;
+}) {
+  const content = (
+    <>
+      <span className="lp-jersey">{player.jersey ?? "–"}</span>
+      <span className="lp-name">{player.name}</span>
+      <span className="lp-pos">{player.position}</span>
+    </>
+  );
+  if (onClick && player.id) {
+    return (
+      <button className="lp-row lp-row--btn" onClick={onClick}>
+        {content}
+      </button>
+    );
+  }
+  return <div className="lp-row">{content}</div>;
+}
+
+function LineupColumn({
+  title,
+  players,
+  formation,
+  teamEspnId,
+  onPlayerClick,
+}: {
+  title: string;
+  players: LineupPlayer[];
+  formation: string | null;
+  teamEspnId: string;
+  onPlayerClick?: (id: string, name: string, teamEspnId: string) => void;
+}) {
+  const starters = players.filter((p) => p.starter);
+  const bench = players.filter((p) => !p.starter);
+  const { lang } = useSettings();
+  return (
+    <div className="lp-col">
+      <h4 className="lp-col__title">
+        {title}
+        {formation && <span className="lp-col__formation">{formation}</span>}
+      </h4>
+      {starters.length > 0 && (
+        <>
+          <p className="lp-group__label">{t(lang, "starters")}</p>
+          {starters.map((p) => (
+            <PlayerRow
+              key={p.id || p.name}
+              player={p}
+              onClick={
+                onPlayerClick && p.id
+                  ? () => onPlayerClick(p.id, p.name, teamEspnId)
+                  : undefined
+              }
+            />
+          ))}
+        </>
+      )}
+      {bench.length > 0 && (
+        <>
+          <p className="lp-group__label">{t(lang, "bench")}</p>
+          {bench.map((p) => (
+            <PlayerRow
+              key={p.id || p.name}
+              player={p}
+              onClick={
+                onPlayerClick && p.id
+                  ? () => onPlayerClick(p.id, p.name, teamEspnId)
+                  : undefined
+              }
+            />
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
+export function LineupTab({
+  match,
+  onPlayerClick,
+}: {
+  match: Match;
+  onPlayerClick?: (id: string, name: string, teamEspnId: string) => void;
+}) {
+  const { lang } = useSettings();
+  const { data, isLoading } = useMatchSummary(match.espnId);
+  if (isLoading)
+    return (
+      <div className="modal-tab-loading">
+        <div className="spinner" />
+      </div>
+    );
+  const lineup = parseMatchLineup(data, match.team1.espnId);
+  if (!lineup) return <p className="modal-tab-empty">{t(lang, "noLineup")}</p>;
+  return (
+    <div className="lp-tab">
+      <LineupColumn
+        title={match.team1.name}
+        players={lineup.home}
+        formation={lineup.homeFormation}
+        teamEspnId={match.team1.espnId ?? ""}
+        onPlayerClick={onPlayerClick}
+      />
+      <LineupColumn
+        title={match.team2.name}
+        players={lineup.away}
+        formation={lineup.awayFormation}
+        teamEspnId={match.team2.espnId ?? ""}
+        onPlayerClick={onPlayerClick}
+      />
+    </div>
+  );
+}
+
 // ─── Close icon ─────────────────────────────────────────────────────────────
 
 export function CloseIcon() {
@@ -348,6 +528,7 @@ export default function MatchModal({
       ? [
           { id: "events" as ModalTab, label: t(lang, "tabEvents") },
           { id: "stats" as ModalTab, label: t(lang, "tabStats") },
+          { id: "lineup" as ModalTab, label: t(lang, "tabLineup") },
         ]
       : []),
   ];
@@ -448,6 +629,9 @@ export default function MatchModal({
           <EventsTab match={match} onPlayerClick={onPlayerClick} />
         )}
         {tab === "stats" && hasData && <StatsTab match={match} />}
+        {tab === "lineup" && hasData && (
+          <LineupTab match={match} onPlayerClick={onPlayerClick} />
+        )}
       </div>
     </div>
   );

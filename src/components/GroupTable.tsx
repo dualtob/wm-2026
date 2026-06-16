@@ -25,8 +25,7 @@ export default function GroupTable({ groupName, standings, lang, onTeamClick }: 
               <th className="col-num">{t(lang, "thW")}</th>
               <th className="col-num">{t(lang, "thD")}</th>
               <th className="col-num">{t(lang, "thL")}</th>
-              <th className="col-num">{t(lang, "thGF")}</th>
-              <th className="col-num">{t(lang, "thGA")}</th>
+              <th className="col-num col-goals">{t(lang, "thGF")}:{t(lang, "thGA")}</th>
               <th className="col-num">{t(lang, "thGD")}</th>
               <th className="col-num col-pts">{t(lang, "thPts")}</th>
             </tr>
@@ -52,8 +51,11 @@ export default function GroupTable({ groupName, standings, lang, onTeamClick }: 
                   <td className="col-num">{row.won}</td>
                   <td className="col-num">{row.drawn}</td>
                   <td className="col-num">{row.lost}</td>
-                  <td className="col-num">{row.goalsFor}</td>
-                  <td className="col-num">{row.goalsAgainst}</td>
+                  <td className="col-num col-goals">
+                    <span className="col-goals__gf">{row.goalsFor}</span>
+                    <span className="col-goals__sep">:</span>
+                    <span className="col-goals__ga">{row.goalsAgainst}</span>
+                  </td>
                   <td className="col-num">{row.goalDiff > 0 ? `+${row.goalDiff}` : row.goalDiff}</td>
                   <td className="col-num col-pts">{row.points}</td>
                 </tr>

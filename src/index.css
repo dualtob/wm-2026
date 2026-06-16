@@ -1022,6 +1022,21 @@ h1, h2, h3, h4 {
   color: var(--text-primary);
 }
 
+/* Compact "GF:GA" column */
+.col-goals {
+  width: 48px;
+  white-space: nowrap;
+}
+
+.col-goals__sep {
+  color: var(--text-tertiary);
+  margin: 0 1px;
+}
+
+.col-goals__ga {
+  color: var(--text-secondary);
+}
+
 .team-cell {
   display: flex;
   align-items: center;

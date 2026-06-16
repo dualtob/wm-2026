@@ -6,6 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PWAPrompt from "./components/PWAPrompt";
 import MatchModal from "./components/MatchModal";
 import MatchListSkeleton from "./components/MatchListSkeleton";
+import TeamPicker from "./components/TeamPicker";
 import { useSettings, LANGS, LANG_LABELS } from "./contexts/SettingsContext";
 import { useWorldCupData } from "./hooks/useWorldCupData";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
@@ -386,27 +387,7 @@ export default function App() {
               <p className="settings-hint">
                 {myTeams.length} {t(lang, "selFollowed")} · {t(lang, "selToggleHint")}
               </p>
-              <div className="team-picker">
-                {Array.from(
-                  new Set(
-                    matches
-                      .filter((m) => !m.isPlaceholder)
-                      .flatMap((m) => [m.team1.name, m.team2.name])
-                      .filter(Boolean)
-                  )
-                )
-                  .sort()
-                  .map((name) => (
-                    <button
-                      key={name}
-                      className={`team-pick-btn ${myTeams.includes(name) ? "team-pick-btn--active" : ""}`}
-                      onClick={() => toggleMyTeam(name)}
-                    >
-                      <FlagIcon team={name} size={20} />
-                      <span>{name}</span>
-                    </button>
-                  ))}
-              </div>
+              <TeamPicker matches={matches} />
             </div>
 
             <button

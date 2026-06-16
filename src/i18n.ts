@@ -127,6 +127,8 @@ const strings = {
     playerAge: "Edad",
     playerNat: "Nacionalidad",
     liveTitle: "En vivo",
+    searchTeams: "Buscar selección…",
+    searchNoResults: "Sin resultados",
   },
 
   en: {
@@ -253,6 +255,8 @@ const strings = {
     playerAge: "Age",
     playerNat: "Nationality",
     liveTitle: "Live",
+    searchTeams: "Search teams…",
+    searchNoResults: "No matches",
   },
 
   de: {
@@ -379,6 +383,8 @@ const strings = {
     playerAge: "Alter",
     playerNat: "Nationalität",
     liveTitle: "Live",
+    searchTeams: "Team suchen…",
+    searchNoResults: "Keine Treffer",
   },
 } as const;
 

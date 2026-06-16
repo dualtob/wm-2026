@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useRegisterSW } from "virtual:pwa-register/react";
 import { lsGet, lsSet } from "../utils/storage";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -34,12 +33,30 @@ function isStandalone(): boolean {
 export function usePWA() {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState(wasDismissedRecently);
+  const [needsRefresh, setNeedsRefresh] = useState(false);
 
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW();
+  // Detect new SW via native Service Worker API — avoids virtual:pwa-register
+  // dependency which Rolldown cannot resolve in some environments.
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener("statechange", () => {
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              setNeedsRefresh(true);
+            }
+          });
+        });
+      })
+      .catch(() => {
+        // SW not available or blocked
+      });
+  }, []);
 
+  // Capture beforeinstallprompt (Android / Chrome / Edge)
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault();
@@ -63,13 +80,10 @@ export function usePWA() {
   };
 
   return {
-    // Update available (new SW deployed)
-    showUpdate: needRefresh,
-    updateServiceWorker,
-    // Android/Chrome: native install prompt captured
+    showUpdate: needsRefresh,
+    updateServiceWorker: () => window.location.reload(),
     showInstallAndroid: !!installPrompt && !dismissed,
     install,
-    // iOS: manual "Add to Home Screen" hint
     showInstallIOS: isIOSSafari() && !isStandalone() && !dismissed,
     dismiss,
   };

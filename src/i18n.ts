@@ -103,6 +103,11 @@ const strings = {
     marketTossUp: "Muy igualado",
     refresh: "Actualizar",
     calToday: "Hoy",
+    pwaUpdate: "Nueva versión disponible",
+    pwaUpdateBtn: "Actualizar",
+    pwaInstall: "Instalar la app",
+    pwaInstallBtn: "Instalar",
+    pwaIOSHint: "Toca Compartir → «Añadir a pantalla de inicio»",
   },
 
   en: {
@@ -205,6 +210,11 @@ const strings = {
     marketTossUp: "Very close",
     refresh: "Refresh",
     calToday: "Today",
+    pwaUpdate: "New version available",
+    pwaUpdateBtn: "Update",
+    pwaInstall: "Install app",
+    pwaInstallBtn: "Install",
+    pwaIOSHint: "Tap Share → \"Add to Home Screen\"",
   },
 
   de: {
@@ -307,6 +317,11 @@ const strings = {
     marketTossUp: "Sehr ausgeglichen",
     refresh: "Aktualisieren",
     calToday: "Heute",
+    pwaUpdate: "Neue Version verfügbar",
+    pwaUpdateBtn: "Aktualisieren",
+    pwaInstall: "App installieren",
+    pwaInstallBtn: "Installieren",
+    pwaIOSHint: "Tippe Teilen → 'Zum Home-Bildschirm'",
   },
 } as const;
 

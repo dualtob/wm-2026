@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar";
 import MatchList from "./components/MatchList";
 import FlagIcon from "./components/FlagIcon";
 import ErrorBoundary from "./components/ErrorBoundary";
+import PWAPrompt from "./components/PWAPrompt";
 import { useSettings, LANGS, LANG_LABELS } from "./contexts/SettingsContext";
 import { useWorldCupData } from "./hooks/useWorldCupData";
 import { useMatchDetail } from "./hooks/useMatchDetail";
@@ -311,6 +312,7 @@ export default function App() {
         </ErrorBoundary>
       </main>
 
+      <PWAPrompt />
       <NavBar activeTab={activeTab} onTabChange={handleTabChange} lang={lang} />
 
       {/* ── Match modal ─────────────────────────────────────────────────── */}

@@ -3,6 +3,7 @@ import type { RosterGroup, RosterPlayer, Leaders, Player } from "../types";
 import {
   ESPN_SCOREBOARD_URL,
   ESPN_CORE_URL,
+  ESPN_SITE_URL,
   ESPN_CDN_URL,
   LS_SCOREBOARD_KEY,
 } from "../constants";
@@ -229,6 +230,20 @@ function aggregateFromScoreboard(events: unknown[]): Leaders {
 export async function fetchMatchDetail(espnEventId: string): Promise<unknown | null> {
   if (!espnEventId) return null;
   const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard/${espnEventId}?_=${Date.now()}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
+// Match summary endpoint — contains boxscore (statistics) and rosters.
+// Used by Phase 2 (stats) and Phase 3 (lineup).
+export async function fetchMatchSummary(espnEventId: string): Promise<unknown | null> {
+  if (!espnEventId) return null;
+  const url = `${ESPN_SITE_URL}/summary?event=${espnEventId}&_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

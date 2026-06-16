@@ -2,8 +2,9 @@ import { useState } from "react";
 import FlagIcon from "./FlagIcon";
 import { useSettings } from "../contexts/SettingsContext";
 import { useMatchGoals } from "../hooks/useMatchDetail";
+import { useMatchSummary } from "../hooks/useMatchSummary";
 import { t } from "../i18n";
-import type { Match, MatchEvent, EventKind } from "../types";
+import type { Match, MatchEvent, EventKind, MatchStats, TeamStats } from "../types";
 import { TZ } from "../constants";
 
 // ─── Raw ESPN detail shape ──────────────────────────────────────────────────
@@ -185,6 +186,118 @@ function OverviewTab({ match, locale }: { match: Match; locale: string }) {
   );
 }
 
+// ─── Stats parsing (Phase 2) ────────────────────────────────────────────────
+
+type RawStat = { name?: string; abbreviation?: string; displayValue?: string };
+type RawBoxscoreTeam = { homeAway?: string; team?: { id?: string }; statistics?: RawStat[] };
+type RawBoxscore = { teams?: RawBoxscoreTeam[] };
+
+function parseNumber(v: string | undefined): number | null {
+  if (!v) return null;
+  const n = parseFloat(v.replace("%", ""));
+  return isNaN(n) ? null : n;
+}
+
+function parseTeamStats(stats: RawStat[] | undefined): TeamStats {
+  const get = (...names: string[]): string | undefined => {
+    for (const s of stats ?? []) {
+      const n = (s.name ?? "").toLowerCase();
+      const a = (s.abbreviation ?? "").toLowerCase();
+      if (names.some((target) => n === target.toLowerCase() || a === target.toLowerCase())) {
+        return s.displayValue;
+      }
+    }
+    return undefined;
+  };
+  return {
+    possession: parseNumber(get("possessionPct", "possession", "POS")),
+    shots: parseNumber(get("totalShots", "shots", "SH")),
+    shotsOnTarget: parseNumber(get("shotsOnTarget", "shotsOnGoal", "ST", "SOT")),
+    corners: parseNumber(get("wonCorners", "corners", "C", "CK")),
+    fouls: parseNumber(get("foulsCommitted", "fouls", "F", "FC")),
+    yellowCards: parseNumber(get("yellowCards", "YC")),
+    redCards: parseNumber(get("redCards", "RC")),
+    offsides: parseNumber(get("offsides", "O", "OFF")),
+  };
+}
+
+export function parseMatchStats(
+  summary: unknown,
+  homeEspnId: string | null | undefined
+): MatchStats | null {
+  const bx = (summary as { boxscore?: RawBoxscore })?.boxscore;
+  if (!bx?.teams || bx.teams.length < 2) return null;
+  const home = bx.teams.find(
+    (t) => t.homeAway === "home" || (homeEspnId && t.team?.id === homeEspnId)
+  );
+  const away = bx.teams.find(
+    (t) => t.homeAway === "away" || (homeEspnId && t.team?.id !== homeEspnId)
+  );
+  if (!home || !away) return null;
+  return { home: parseTeamStats(home.statistics), away: parseTeamStats(away.statistics) };
+}
+
+// ─── Stats row ──────────────────────────────────────────────────────────────
+
+function StatBar({
+  label,
+  home,
+  away,
+  isPercent = false,
+}: {
+  label: string;
+  home: number | null;
+  away: number | null;
+  isPercent?: boolean;
+}) {
+  if (home === null && away === null) return null;
+  const h = home ?? 0;
+  const a = away ?? 0;
+  const total = h + a;
+  const homePct = isPercent ? h : total === 0 ? 50 : (h / total) * 100;
+  const awayPct = isPercent ? a : 100 - homePct;
+  const fmt = (n: number | null) =>
+    n === null ? "–" : isPercent ? `${Math.round(n)}%` : String(Math.round(n));
+  return (
+    <div className="stat-row">
+      <div className="stat-row__head">
+        <span className="stat-row__num">{fmt(home)}</span>
+        <span className="stat-row__label">{label}</span>
+        <span className="stat-row__num">{fmt(away)}</span>
+      </div>
+      <div className="stat-row__bars">
+        <div className="stat-row__bar stat-row__bar--home" style={{ width: `${homePct}%` }} />
+        <div className="stat-row__bar stat-row__bar--away" style={{ width: `${awayPct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── Stats tab (Phase 2) ────────────────────────────────────────────────────
+
+export function StatsTab({ match }: { match: Match }) {
+  const { lang } = useSettings();
+  const { data, isLoading } = useMatchSummary(match.espnId);
+  if (isLoading)
+    return (
+      <div className="modal-tab-loading">
+        <div className="spinner" />
+      </div>
+    );
+  const stats = parseMatchStats(data, match.team1.espnId);
+  if (!stats) return <p className="modal-tab-empty">{t(lang, "noStats")}</p>;
+  return (
+    <div className="stats-tab">
+      <StatBar label={t(lang, "statPoss")} home={stats.home.possession} away={stats.away.possession} isPercent />
+      <StatBar label={t(lang, "statShots")} home={stats.home.shots} away={stats.away.shots} />
+      <StatBar label={t(lang, "statShotsOn")} home={stats.home.shotsOnTarget} away={stats.away.shotsOnTarget} />
+      <StatBar label={t(lang, "statCorners")} home={stats.home.corners} away={stats.away.corners} />
+      <StatBar label={t(lang, "statFouls")} home={stats.home.fouls} away={stats.away.fouls} />
+      <StatBar label={t(lang, "statOffsides")} home={stats.home.offsides} away={stats.away.offsides} />
+    </div>
+  );
+}
+
 // ─── Close icon ─────────────────────────────────────────────────────────────
 
 export function CloseIcon() {
@@ -231,7 +344,12 @@ export default function MatchModal({
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
     { id: "overview", label: t(lang, "tabOverview") },
-    ...(hasData ? [{ id: "events" as ModalTab, label: t(lang, "tabEvents") }] : []),
+    ...(hasData
+      ? [
+          { id: "events" as ModalTab, label: t(lang, "tabEvents") },
+          { id: "stats" as ModalTab, label: t(lang, "tabStats") },
+        ]
+      : []),
   ];
 
   return (
@@ -329,6 +447,7 @@ export default function MatchModal({
         {tab === "events" && hasData && (
           <EventsTab match={match} onPlayerClick={onPlayerClick} />
         )}
+        {tab === "stats" && hasData && <StatsTab match={match} />}
       </div>
     </div>
   );

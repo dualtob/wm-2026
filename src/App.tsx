@@ -1,4 +1,4 @@
-import { useState, useCallback, useTransition, lazy, Suspense } from "react";
+import { useState, useCallback, useEffect, useRef, useTransition, lazy, Suspense } from "react";
 import NavBar from "./components/NavBar";
 import MatchList from "./components/MatchList";
 import FlagIcon from "./components/FlagIcon";
@@ -71,6 +71,18 @@ export default function App() {
     [startTransition]
   );
 
+  // Refresh button: brief success flash after fetching completes
+  const [refreshDone, setRefreshDone] = useState(false);
+  const wasFetching = useRef(isFetching);
+  useEffect(() => {
+    if (wasFetching.current && !isFetching && !isError) {
+      setRefreshDone(true);
+      const id = setTimeout(() => setRefreshDone(false), 1000);
+      return () => clearTimeout(id);
+    }
+    wasFetching.current = isFetching;
+  }, [isFetching, isError]);
+
   return (
     <div className="app">
       {/* ── Header ─────────────────────────────────────────────────────── */}
@@ -80,24 +92,21 @@ export default function App() {
           <div className="app-header__right">
             {!isOnline && <span className="offline-badge">{t(lang, "offline")}</span>}
             <button
-              className={`refresh-btn${isFetching ? " refresh-btn--spinning" : ""}`}
+              className={`refresh-btn${isFetching ? " refresh-btn--spinning" : ""}${refreshDone ? " refresh-btn--done" : ""}`}
               onClick={() => refetch()}
               aria-label={t(lang, "refresh")}
               disabled={isFetching}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                width="18"
-                height="18"
-              >
-                <polyline points="23 4 23 10 17 10" />
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-              </svg>
+              {refreshDone ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+              )}
             </button>
             <button
               className="settings-btn"

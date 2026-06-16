@@ -5,6 +5,7 @@ import FlagIcon from "./components/FlagIcon";
 import ErrorBoundary from "./components/ErrorBoundary";
 import PWAPrompt from "./components/PWAPrompt";
 import MatchModal from "./components/MatchModal";
+import MatchListSkeleton from "./components/MatchListSkeleton";
 import { useSettings, LANGS, LANG_LABELS } from "./contexts/SettingsContext";
 import { useWorldCupData } from "./hooks/useWorldCupData";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
@@ -151,10 +152,7 @@ export default function App() {
       <main className="app-main" id={`panel-${activeTab}`} role="tabpanel">
         <ErrorBoundary>
           {isLoading ? (
-            <div className="loading-screen">
-              <div className="spinner" />
-              <p>{t(lang, "loadingMatches")}</p>
-            </div>
+            <MatchListSkeleton />
           ) : isError && matches.length === 0 ? (
             <div className="error-screen">
               <div className="error-screen__icon">⚠️</div>

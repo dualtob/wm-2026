@@ -1467,64 +1467,142 @@ h1, h2, h3, h4 {
   flex-shrink: 0;
 }
 
-/* ---------- Match Goals ---------- */
-.match-modal__goals {
-  margin-top: 12px;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
+/* ---------- Match Modal tabs ---------- */
+.match-modal__tabs {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 3px;
+  background: var(--bg-input);
+  border-radius: var(--radius-md);
 }
 
-.match-modal__goals-title {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+.match-modal__tab {
+  flex: 1;
+  padding: 7px 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-radius: calc(var(--radius-md) - 3px);
+  transition: background var(--transition), color var(--transition);
+}
+
+.match-modal__tab.active {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.modal-tab-loading {
+  display: flex;
+  justify-content: center;
+  padding: 28px 0;
+}
+
+.modal-tab-loading .spinner {
+  width: 22px;
+  height: 22px;
+  border-width: 2px;
+}
+
+.modal-tab-empty {
+  text-align: center;
+  padding: 24px 12px;
   color: var(--text-tertiary);
-  margin-bottom: 8px;
+  font-size: 0.85rem;
 }
 
-.goal-list {
+/* ---------- Match Event timeline ---------- */
+.ev-timeline {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.goal-item {
-  display: flex;
-  align-items: baseline;
   gap: 6px;
-  font-size: 0.85rem;
-  padding: 3px 0;
 }
 
-.goal-item--away {
+.ev-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.ev-item--away {
   flex-direction: row-reverse;
   text-align: right;
 }
 
-.goal-item__minute {
-  font-size: 0.75rem;
+.ev-item__min {
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-tertiary);
-  min-width: 28px;
+  min-width: 30px;
   font-variant-numeric: tabular-nums;
 }
 
-.goal-item--away .goal-item__minute {
+.ev-item--away .ev-item__min {
   text-align: right;
 }
 
-.goal-item__scorer {
+.ev-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.ev-icon--ball {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.ev-card {
+  display: inline-block;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.ev-card--yellow {
+  background: #fbbf24;
+}
+
+.ev-card--red {
+  background: #ef4444;
+}
+
+.ev-item__player {
   font-weight: 600;
   color: var(--text-primary);
   flex: 1;
+  min-width: 0;
 }
 
-.goal-item__tag {
-  font-size: 0.65rem;
+.ev-player-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--transition);
+}
+
+.ev-player-btn:hover {
+  text-decoration-color: var(--accent);
+}
+
+.ev-tag {
+  font-size: 0.62rem;
   font-weight: 700;
   background: var(--bg-input);
   color: var(--text-secondary);
@@ -1534,21 +1612,10 @@ h1, h2, h3, h4 {
   vertical-align: middle;
 }
 
-.goal-item__assist {
+.ev-assist {
   color: var(--text-secondary);
   font-weight: 400;
-}
-
-.modal-goals-loading {
-  display: flex;
-  justify-content: center;
-  padding: 12px 0 4px;
-}
-
-.modal-goals-loading .spinner {
-  width: 20px;
-  height: 20px;
-  border-width: 2px;
+  font-size: 0.82rem;
 }
 
 /* ---------- Settings Modal ---------- */

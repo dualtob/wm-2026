@@ -98,3 +98,77 @@ export interface FixturesResult {
   fromCache: boolean;
   stale?: boolean;
 }
+
+// ─── Match events (Phase 1) ────────────────────────────────────────────────
+export type EventKind =
+  | "goal"
+  | "ownGoal"
+  | "penalty"
+  | "yellowCard"
+  | "redCard"
+  | "yellowRedCard";
+
+export interface MatchEvent {
+  minute: string;
+  kind: EventKind;
+  player: string;
+  playerId?: string;
+  assist?: string;
+  side: "home" | "away";
+}
+
+// ─── Match stats (Phase 2) ─────────────────────────────────────────────────
+export interface TeamStats {
+  possession: number | null;
+  shots: number | null;
+  shotsOnTarget: number | null;
+  corners: number | null;
+  fouls: number | null;
+  yellowCards: number | null;
+  redCards: number | null;
+  offsides: number | null;
+}
+
+export interface MatchStats {
+  home: TeamStats;
+  away: TeamStats;
+}
+
+// ─── Match lineup (Phase 3) ────────────────────────────────────────────────
+export interface LineupPlayer {
+  id: string;
+  name: string;
+  jersey: string | null;
+  position: string;
+  starter: boolean;
+  headshot: string | null;
+}
+
+export interface MatchLineup {
+  home: LineupPlayer[];
+  away: LineupPlayer[];
+  homeFormation: string | null;
+  awayFormation: string | null;
+}
+
+// ─── Player profile (Phase 4) ──────────────────────────────────────────────
+export interface PlayerProfile {
+  id: string;
+  name: string;
+  team: string;
+  teamEspnId: string;
+  position: string;
+  age: number | null;
+  nationality: string | null;
+  headshot: string | null;
+  club: string | null;
+}
+
+// ─── Live plays (Phase 5) ──────────────────────────────────────────────────
+export interface LivePlay {
+  id: string;
+  clock: string;
+  text: string;
+  scoringPlay: boolean;
+  side?: "home" | "away";
+}

@@ -52,6 +52,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --accent: #1fc294;
+    --accent-dark: #0ea571;
+    --accent-light: #2dd9a8;
+
     --bg: #0d0f13;
     --bg-card: #1a1d23;
     --bg-header: #111318;
@@ -63,8 +67,8 @@
     --text-secondary: #9ca3af;
     --text-tertiary: #6b7280;
 
-    --border: #2d3038;
-    --border-strong: #3d4048;
+    --border: #383c46;
+    --border-strong: #4a4f5a;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);

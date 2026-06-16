@@ -451,7 +451,7 @@ h1, h2, h3, h4 {
 }
 
 .nav-tab__label {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -489,7 +489,7 @@ h1, h2, h3, h4 {
 .subtab-badge {
   background: var(--color-live);
   color: white;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   padding: 1px 6px;
   border-radius: var(--radius-full);
@@ -926,7 +926,7 @@ h1, h2, h3, h4 {
 }
 
 .legend-item {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--text-tertiary);
   display: flex;
   align-items: center;
@@ -1117,7 +1117,7 @@ h1, h2, h3, h4 {
 }
 
 .player-row__unit {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -1613,7 +1613,7 @@ h1, h2, h3, h4 {
 }
 
 .ev-tag {
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 700;
   background: var(--bg-input);
   color: var(--text-secondary);
@@ -1724,7 +1724,7 @@ h1, h2, h3, h4 {
 
 .lp-group__label {
   margin: 6px 0 2px;
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-tertiary);
   text-transform: uppercase;
@@ -1877,7 +1877,7 @@ h1, h2, h3, h4 {
 }
 
 .player-sheet__stat-label {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;

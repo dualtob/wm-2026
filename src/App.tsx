@@ -15,6 +15,13 @@ import type { Match } from "./types";
 const Groups = lazy(() => import("./components/Groups"));
 const Stats = lazy(() => import("./components/Stats"));
 const TeamSheet = lazy(() => import("./components/TeamSheet"));
+const PlayerSheet = lazy(() => import("./components/PlayerSheet"));
+
+interface OpenPlayer {
+  id: string;
+  name: string;
+  teamEspnId: string;
+}
 
 type TabId = "upcoming" | "calendar" | "groups" | "stats";
 
@@ -57,6 +64,7 @@ export default function App() {
 
   const [openTeam, setOpenTeam] = useState<string | null>(null);
   const [openMatch, setOpenMatch] = useState<Match | null>(null);
+  const [openPlayer, setOpenPlayer] = useState<OpenPlayer | null>(null);
 
   const handleTabChange = useCallback(
     (tab: TabId) => startTransition(() => setActiveTab(tab)),
@@ -286,7 +294,24 @@ export default function App() {
             setOpenMatch(null);
             setOpenTeam(name);
           }}
+          onPlayerClick={(id, name, teamEspnId) =>
+            setOpenPlayer({ id, name, teamEspnId })
+          }
         />
+      )}
+
+      {/* ── Player sheet (Phase 4) ─────────────────────────────────────── */}
+      {openPlayer && (
+        <ErrorBoundary>
+          <Suspense fallback={null}>
+            <PlayerSheet
+              playerId={openPlayer.id}
+              fallbackName={openPlayer.name}
+              fallbackTeamEspnId={openPlayer.teamEspnId}
+              onClose={() => setOpenPlayer(null)}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
 
       {/* ── Team sheet ──────────────────────────────────────────────────── */}

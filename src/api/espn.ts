@@ -239,6 +239,19 @@ export async function fetchMatchDetail(espnEventId: string): Promise<unknown | n
   }
 }
 
+// Player profile (Phase 4) — site API endpoint with bio + season stats
+export async function fetchPlayerProfile(playerId: string): Promise<unknown | null> {
+  if (!playerId) return null;
+  const url = `${ESPN_SITE_URL}/athletes/${playerId}/overview?_=${Date.now()}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 // Match summary endpoint — contains boxscore (statistics) and rosters.
 // Used by Phase 2 (stats) and Phase 3 (lineup).
 export async function fetchMatchSummary(espnEventId: string): Promise<unknown | null> {

@@ -1773,6 +1773,135 @@ h1, h2, h3, h4 {
   letter-spacing: 0.03em;
 }
 
+/* ---------- Player Sheet (Phase 4) ---------- */
+.player-sheet {
+  background: var(--bg-modal);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 20px calc(24px + var(--safe-bottom));
+  max-height: 90dvh;
+  overflow-y: auto;
+  position: relative;
+  width: 100%;
+  animation: sheet-up 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.player-sheet__hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.player-sheet__photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.player-sheet__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-sheet__name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.player-sheet__team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.player-sheet__pos {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.player-sheet__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.player-sheet__stat {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.player-sheet__stat-val {
+  font-size: 1.4rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.player-sheet__stat-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.player-sheet__meta {
+  margin-top: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.player-sheet__meta-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.player-sheet__meta-row:last-child {
+  border-bottom: none;
+}
+
+.player-sheet__meta-row > span:first-child {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.player-sheet__meta-row > span:last-child {
+  font-weight: 700;
+}
+
 /* ---------- Settings Modal ---------- */
 .settings-modal {
   background: var(--bg-modal);

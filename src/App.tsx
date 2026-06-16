@@ -6,7 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PWAPrompt from "./components/PWAPrompt";
 import { useSettings, LANGS, LANG_LABELS } from "./contexts/SettingsContext";
 import { useWorldCupData } from "./hooks/useWorldCupData";
-import { useMatchDetail } from "./hooks/useMatchDetail";
+import { useMatchGoals } from "./hooks/useMatchDetail";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { t } from "./i18n";
 import type { Match, Lang } from "./types";
@@ -73,7 +73,7 @@ function MatchGoals({
   homeEspnId: string | null | undefined;
   lang: Lang;
 }) {
-  const { data, isLoading } = useMatchDetail(espnId);
+  const { data, isLoading } = useMatchGoals(espnId);
   if (isLoading)
     return (
       <div className="modal-goals-loading">

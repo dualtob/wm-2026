@@ -704,15 +704,17 @@ export default function MatchModal({
         )}
 
         {/* Tab content */}
-        {tab === "overview" && <OverviewTab match={match} locale={locale} />}
-        {tab === "live" && hasData && <LiveTab match={match} />}
-        {tab === "events" && hasData && (
-          <EventsTab match={match} onPlayerClick={onPlayerClick} />
-        )}
-        {tab === "stats" && hasData && <StatsTab match={match} />}
-        {tab === "lineup" && hasData && (
-          <LineupTab match={match} onPlayerClick={onPlayerClick} />
-        )}
+        <div key={tab} className="match-modal__panel">
+          {tab === "overview" && <OverviewTab match={match} locale={locale} />}
+          {tab === "live" && hasData && <LiveTab match={match} />}
+          {tab === "events" && hasData && (
+            <EventsTab match={match} onPlayerClick={onPlayerClick} />
+          )}
+          {tab === "stats" && hasData && <StatsTab match={match} />}
+          {tab === "lineup" && hasData && (
+            <LineupTab match={match} onPlayerClick={onPlayerClick} />
+          )}
+        </div>
       </div>
     </div>
   );

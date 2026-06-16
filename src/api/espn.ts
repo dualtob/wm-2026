@@ -239,6 +239,19 @@ export async function fetchMatchDetail(espnEventId: string): Promise<unknown | n
   }
 }
 
+// Live play-by-play (Phase 5) — included in match summary commentary section
+export async function fetchMatchCommentary(espnEventId: string): Promise<unknown | null> {
+  if (!espnEventId) return null;
+  const url = `${ESPN_SITE_URL}/summary?event=${espnEventId}&_=${Date.now()}`;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 // Player profile (Phase 4) — site API endpoint with bio + season stats
 export async function fetchPlayerProfile(playerId: string): Promise<unknown | null> {
   if (!playerId) return null;

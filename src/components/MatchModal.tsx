@@ -3,8 +3,18 @@ import FlagIcon from "./FlagIcon";
 import { useSettings } from "../contexts/SettingsContext";
 import { useMatchGoals } from "../hooks/useMatchDetail";
 import { useMatchSummary } from "../hooks/useMatchSummary";
+import { useLivePlays } from "../hooks/useLivePlays";
 import { t } from "../i18n";
-import type { Match, MatchEvent, EventKind, MatchStats, TeamStats, MatchLineup, LineupPlayer } from "../types";
+import type {
+  Match,
+  MatchEvent,
+  EventKind,
+  MatchStats,
+  TeamStats,
+  MatchLineup,
+  LineupPlayer,
+  LivePlay,
+} from "../types";
 import { ESPN_CDN_URL } from "../constants";
 import { TZ } from "../constants";
 
@@ -478,6 +488,72 @@ export function LineupTab({
   );
 }
 
+// ─── Live plays parsing (Phase 5) ───────────────────────────────────────────
+
+type RawPlay = {
+  id?: string | number;
+  clock?: { displayValue?: string };
+  text?: string;
+  shortText?: string;
+  scoringPlay?: boolean;
+  team?: { id?: string };
+};
+
+export function parseLivePlays(
+  commentary: unknown,
+  homeEspnId: string | null | undefined
+): LivePlay[] {
+  // Commentary array (preferred) or fall back to plays array
+  const raw = commentary as { commentary?: Array<{ play?: RawPlay }>; plays?: RawPlay[] };
+  const plays: RawPlay[] = (raw?.commentary?.map((c) => c.play).filter(Boolean) as RawPlay[]) ??
+    raw?.plays ??
+    [];
+  return plays.slice(0, 20).map((p, i) => ({
+    id: String(p.id ?? i),
+    clock: p.clock?.displayValue ?? "",
+    text: p.text ?? p.shortText ?? "",
+    scoringPlay: !!p.scoringPlay,
+    side: p.team?.id
+      ? p.team.id === (homeEspnId ?? undefined)
+        ? "home"
+        : "away"
+      : undefined,
+  }));
+}
+
+// ─── Live tab (Phase 5) ─────────────────────────────────────────────────────
+
+export function LiveTab({ match }: { match: Match }) {
+  const { lang } = useSettings();
+  const { data, isLoading } = useLivePlays(match.espnId, !!match.isLive);
+  if (isLoading)
+    return (
+      <div className="modal-tab-loading">
+        <div className="spinner" />
+      </div>
+    );
+  const plays = parseLivePlays(data, match.team1.espnId);
+  if (!plays.length) return <p className="modal-tab-empty">{t(lang, "noEvents")}</p>;
+  return (
+    <ul className="live-feed">
+      {plays.map((p) => (
+        <li
+          key={p.id}
+          className={`live-feed__item${p.scoringPlay ? " live-feed__item--goal" : ""}${
+            p.side ? ` live-feed__item--${p.side}` : ""
+          }`}
+        >
+          {p.clock && <span className="live-feed__clock">{p.clock}</span>}
+          <span className="live-feed__text">
+            {p.scoringPlay && <span className="ev-icon ev-icon--ball" aria-hidden="true">⚽</span>}
+            {p.text}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 // ─── Close icon ─────────────────────────────────────────────────────────────
 
 export function CloseIcon() {
@@ -499,7 +575,7 @@ export function CloseIcon() {
 
 // ─── Tab types (expanded per phase) ─────────────────────────────────────────
 
-export type ModalTab = "overview" | "events" | "stats" | "lineup";
+export type ModalTab = "overview" | "live" | "events" | "stats" | "lineup";
 
 // ─── Main modal ─────────────────────────────────────────────────────────────
 
@@ -517,13 +593,15 @@ export default function MatchModal({
   onPlayerClick,
 }: MatchModalProps) {
   const { lang } = useSettings();
-  const [tab, setTab] = useState<ModalTab>("overview");
-
   const hasData = (match.isLive || match.played) && !!match.espnId;
+  const [tab, setTab] = useState<ModalTab>(match.isLive && hasData ? "live" : "overview");
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
     { id: "overview", label: t(lang, "tabOverview") },
+    ...(match.isLive && hasData
+      ? [{ id: "live" as ModalTab, label: t(lang, "liveTitle") }]
+      : []),
     ...(hasData
       ? [
           { id: "events" as ModalTab, label: t(lang, "tabEvents") },
@@ -625,6 +703,7 @@ export default function MatchModal({
 
         {/* Tab content */}
         {tab === "overview" && <OverviewTab match={match} locale={locale} />}
+        {tab === "live" && hasData && <LiveTab match={match} />}
         {tab === "events" && hasData && (
           <EventsTab match={match} onPlayerClick={onPlayerClick} />
         )}

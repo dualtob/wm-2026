@@ -42,41 +42,45 @@ export default function MatchCard({
     ? `${group}${matchday ? ` · ${t(lang, "matchdayAbbr")}${matchday}` : ""}`
     : stage;
 
+  const scoreLabel =
+    (isLive || played) && score != null
+      ? `${score.home}–${score.away}`
+      : kickoff
+      ? formatKickoff(kickoff, lang)
+      : "";
+
   return (
     <article
       className={`match-card ${isLive ? "match-card--live" : ""} ${isMyMatch ? "match-card--mine" : ""}`}
-      onClick={() => onMatchClick?.(match)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === "Enter" && onMatchClick?.(match)}
-      aria-label={`${team1.name} vs ${team2.name}`}
     >
+      {/* Invisible full-card button for the primary action (open match detail).
+          Sits behind team buttons so team clicks reach their own handlers. */}
+      <button
+        className="match-card__overlay"
+        onClick={() => onMatchClick?.(match)}
+        aria-label={`${team1.name} vs ${team2.name}${scoreLabel ? `, ${scoreLabel}` : ""}`}
+      />
+
       {stageLabel && <div className="match-card__stage">{stageLabel}</div>}
 
       <div className="match-card__body">
-        <div
+        <button
           className="match-card__team"
-          onClick={(e) => {
-            e.stopPropagation();
-            onTeamClick?.(team1.name);
-          }}
+          onClick={() => onTeamClick?.(team1.name)}
+          aria-label={team1.name}
         >
           <FlagIcon team={team1.name} size={28} />
           <span className="match-card__team-name">{team1.abbr}</span>
-        </div>
+        </button>
 
         <div className="match-card__center">
           {(isLive || played) && score !== null && score !== undefined ? (
             <div className="match-card__score">
-              <span
-                className={`match-card__score-num${score.home > score.away ? " match-card__score-num--win" : ""}`}
-              >
+              <span className={`match-card__score-num${score.home > score.away ? " match-card__score-num--win" : ""}`}>
                 {score.home}
               </span>
               <span className="match-card__score-sep">–</span>
-              <span
-                className={`match-card__score-num${score.away > score.home ? " match-card__score-num--win" : ""}`}
-              >
+              <span className={`match-card__score-num${score.away > score.home ? " match-card__score-num--win" : ""}`}>
                 {score.away}
               </span>
             </div>
@@ -93,16 +97,14 @@ export default function MatchCard({
           )}
         </div>
 
-        <div
+        <button
           className="match-card__team match-card__team--right"
-          onClick={(e) => {
-            e.stopPropagation();
-            onTeamClick?.(team2.name);
-          }}
+          onClick={() => onTeamClick?.(team2.name)}
+          aria-label={team2.name}
         >
           <span className="match-card__team-name">{team2.abbr}</span>
           <FlagIcon team={team2.name} size={28} />
-        </div>
+        </button>
       </div>
 
       {match.venue && (

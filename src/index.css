@@ -614,18 +614,27 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: 12px;
-  cursor: pointer;
   transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
   position: relative;
   overflow: hidden;
 }
 
-.match-card:hover {
+/* Invisible full-card button — primary interactive surface */
+.match-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.match-card:has(.match-card__overlay:hover) {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.match-card:active {
+.match-card:has(.match-card__overlay:active) {
   transform: translateY(0);
 }
 
@@ -651,12 +660,16 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-bottom: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .match-card__body {
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
+  z-index: 1;
 }
 
 .match-card__team {
@@ -668,6 +681,10 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-sm);
   padding: 4px;
   transition: background var(--transition);
+  /* Button reset */
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 
 .match-card__team:hover {
@@ -748,6 +765,8 @@ h1, h2, h3, h4 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------- Live dot ---------- */

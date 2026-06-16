@@ -654,6 +654,15 @@ h1, h2, h3, h4 {
   box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
 }
 
+.match-card--played {
+  background: color-mix(in srgb, var(--bg-card) 96%, var(--text-tertiary));
+}
+
+.match-card--played .match-card__stage,
+.match-card--played .match-card__venue {
+  opacity: 0.7;
+}
+
 .match-card--mine::before {
   content: "";
   position: absolute;

@@ -51,7 +51,7 @@ export default function MatchCard({
 
   return (
     <article
-      className={`match-card ${isLive ? "match-card--live" : ""} ${isMyMatch ? "match-card--mine" : ""}`}
+      className={`match-card${isLive ? " match-card--live" : ""}${played && !isLive ? " match-card--played" : ""}${isMyMatch ? " match-card--mine" : ""}`}
     >
       {/* Invisible full-card button for the primary action (open match detail).
           Sits behind team buttons so team clicks reach their own handlers. */}

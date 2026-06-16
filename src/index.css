@@ -240,6 +240,13 @@ h1, h2, h3, h4 {
   cursor: pointer;
   transition: background var(--transition);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-ticker__item strong {
+  font-variant-numeric: tabular-nums;
+  min-width: 0.7em;
+  text-align: center;
 }
 
 .live-ticker__item:hover {

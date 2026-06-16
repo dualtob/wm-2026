@@ -637,7 +637,9 @@ export default function MatchModal({
             aria-label={match.team1.name}
           >
             <FlagIcon team={match.team1.name} size={48} />
-            <span>{match.team1.name}</span>
+            <span title={match.team1.name}>
+              {match.team1.name.length > 14 ? match.team1.abbr : match.team1.name}
+            </span>
           </button>
 
           <div className="match-modal__score">
@@ -682,7 +684,9 @@ export default function MatchModal({
             aria-label={match.team2.name}
           >
             <FlagIcon team={match.team2.name} size={48} />
-            <span>{match.team2.name}</span>
+            <span title={match.team2.name}>
+              {match.team2.name.length > 14 ? match.team2.abbr : match.team2.name}
+            </span>
           </button>
         </div>
 

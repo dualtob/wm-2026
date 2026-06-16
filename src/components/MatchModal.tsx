@@ -592,7 +592,9 @@ export default function MatchModal({
   onTeamClick,
   onPlayerClick,
 }: MatchModalProps) {
-  const { lang } = useSettings();
+  const { lang, myTeams } = useSettings();
+  const isMyMatch =
+    myTeams.includes(match.team1.name) || myTeams.includes(match.team2.name);
   const hasData = (match.isLive || match.played) && !!match.espnId;
   const [tab, setTab] = useState<ModalTab>(match.isLive && hasData ? "live" : "overview");
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
@@ -619,7 +621,7 @@ export default function MatchModal({
       aria-modal="true"
       aria-label={`${match.team1.name} vs ${match.team2.name}`}
     >
-      <div className="match-modal">
+      <div className={`match-modal${isMyMatch ? " match-modal--mine" : ""}`}>
         <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
           <CloseIcon />
         </button>

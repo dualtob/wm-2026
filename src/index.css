@@ -680,6 +680,23 @@ h1, h2, h3, h4 {
   top: calc(var(--sticky-top) + 48px); /* account for cal-toolbar */
 }
 
+.stage-banner {
+  display: inline-block;
+  margin: 24px 0 6px;
+  padding: 6px 14px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.date-group:first-child .stage-banner {
+  margin-top: 8px;
+}
+
 /* Scroll offset so sticky header doesn't cover the anchor */
 #calendar-today {
   scroll-margin-top: calc(var(--sticky-top) + 48px + 18px);

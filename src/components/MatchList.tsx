@@ -42,6 +42,25 @@ function formatDateHeader(dateKey: string, lang: Lang, todayKey: string, tomorro
   ).format(date);
 }
 
+// Pick the dominant stage label for a day so we can show stage banners
+// when the calendar transitions from group stage → knockout etc.
+function getDayStage(dayMatches: Match[]): string {
+  const counts: Record<string, number> = {};
+  for (const m of dayMatches) {
+    const k = m.group ? "Group stage" : m.stage || "Unknown";
+    counts[k] = (counts[k] ?? 0) + 1;
+  }
+  let best = "";
+  let bestCount = 0;
+  for (const [k, v] of Object.entries(counts)) {
+    if (v > bestCount) {
+      best = k;
+      bestCount = v;
+    }
+  }
+  return best;
+}
+
 export default function MatchList({
   matches,
   lang,
@@ -123,29 +142,35 @@ export default function MatchList({
         </div>
       )}
 
-      {sortedKeys.map((dateKey) => (
-        <section
-          key={dateKey}
-          className="date-group"
-          id={dateKey === todayAnchorKey ? "calendar-today" : undefined}
-        >
-          <h2 className="date-group__header">
-            {formatDateHeader(dateKey, lang, todayKey, tomorrowKey)}
-          </h2>
-          <div className="date-group__matches">
-            {dateGroups[dateKey].map((match) => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                lang={lang}
-                myTeams={myTeams}
-                onTeamClick={onTeamClick}
-                onMatchClick={onMatchClick}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      {sortedKeys.map((dateKey, idx) => {
+        const prevStage = idx > 0 ? getDayStage(dateGroups[sortedKeys[idx - 1]]) : null;
+        const stage = mode === "calendar" ? getDayStage(dateGroups[dateKey]) : null;
+        const showStageBanner = mode === "calendar" && stage && stage !== prevStage;
+        return (
+          <section
+            key={dateKey}
+            className="date-group"
+            id={dateKey === todayAnchorKey ? "calendar-today" : undefined}
+          >
+            {showStageBanner && <div className="stage-banner">{stage}</div>}
+            <h2 className="date-group__header">
+              {formatDateHeader(dateKey, lang, todayKey, tomorrowKey)}
+            </h2>
+            <div className="date-group__matches">
+              {dateGroups[dateKey].map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  lang={lang}
+                  myTeams={myTeams}
+                  onTeamClick={onTeamClick}
+                  onMatchClick={onMatchClick}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }

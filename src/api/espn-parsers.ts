@@ -193,7 +193,7 @@ export function parseLivePlays(
   const raw = commentary as { commentary?: Array<{ play?: RawPlay }>; plays?: RawPlay[] };
   const plays: RawPlay[] =
     (raw?.commentary?.map((c) => c.play).filter(Boolean) as RawPlay[]) ?? raw?.plays ?? [];
-  return plays.slice(0, 20).map((p, i) => ({
+  return plays.slice(-20).reverse().map((p, i) => ({
     id: String(p.id ?? i),
     clock: p.clock?.displayValue ?? "",
     text: p.text ?? p.shortText ?? "",

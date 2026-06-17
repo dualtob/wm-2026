@@ -36,7 +36,7 @@ export default function EventsTab({
         <div className="spinner" />
       </div>
     );
-  const events = parseMatchEvents(data, match.team1.espnId).slice().reverse();
+  const events = parseMatchEvents(data, match.team1.espnId);
   if (!events.length)
     return <p className="modal-tab-empty">{t(lang, "noEvents")}</p>;
 

@@ -902,6 +902,10 @@ h1, h2, h3, h4 {
   font-variant-numeric: tabular-nums;
 }
 
+.match-card__time--today {
+  color: var(--accent);
+}
+
 .match-card__status {
   font-size: 0.7rem;
   font-weight: 600;

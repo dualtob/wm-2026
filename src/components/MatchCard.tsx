@@ -12,11 +12,24 @@ interface MatchCardProps {
   myTeams?: string[];
 }
 
-function formatKickoff(date: Date, lang: Lang): string {
-  return new Intl.DateTimeFormat(
-    lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES",
-    { timeZone: TZ, hour: "2-digit", minute: "2-digit" }
-  ).format(date);
+const dateKeyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
+
+function getTodayKey(): string {
+  return dateKeyFmt.format(new Date());
+}
+
+function getDateKey(date: Date): string {
+  return dateKeyFmt.format(date);
+}
+
+function formatKickoff(date: Date, lang: Lang, isToday: boolean): string {
+  const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
+  const time = new Intl.DateTimeFormat(locale, {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+  return isToday ? `${t(lang, "relToday")} ${time}` : time;
 }
 
 export default function MatchCard({
@@ -30,6 +43,7 @@ export default function MatchCard({
     match;
 
   const isMyMatch = myTeams.includes(team1.name) || myTeams.includes(team2.name);
+  const isToday = !!kickoff && getDateKey(kickoff) === getTodayKey();
 
   // Pulse the side whose score just increased
   const prev = useRef(score);
@@ -65,7 +79,7 @@ export default function MatchCard({
     (isLive || played) && score != null
       ? `${score.home}–${score.away}`
       : kickoff
-      ? formatKickoff(kickoff, lang)
+      ? formatKickoff(kickoff, lang, isToday)
       : "";
 
   return (
@@ -108,8 +122,8 @@ export default function MatchCard({
               </span>
             </div>
           ) : (
-            <div className="match-card__time">
-              {kickoff ? formatKickoff(kickoff, lang) : "TBD"}
+            <div className={`match-card__time${isToday ? " match-card__time--today" : ""}`}>
+              {kickoff ? formatKickoff(kickoff, lang, isToday) : "TBD"}
             </div>
           )}
           {statusLabel && (

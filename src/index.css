@@ -932,17 +932,27 @@ h1, h2, h3, h4 {
 /* ---------- Live dot ---------- */
 .live-dot {
   display: inline-block;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: var(--color-live);
   border-radius: 50%;
-  animation: pulse 1.2s ease-in-out infinite;
   flex-shrink: 0;
+  position: relative;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--color-live);
+  animation: live-ping 1.6s ease-out infinite;
+}
+
+@keyframes live-ping {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  80%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
 }
 
 /* ---------- Flag Icon ---------- */

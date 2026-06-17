@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { lsGet, lsSet } from "../utils/storage";
 import FlagIcon from "./FlagIcon";
 import { useSettings } from "../contexts/SettingsContext";
 import { useMatchGoals } from "../hooks/useMatchDetail";
@@ -596,7 +597,19 @@ export default function MatchModal({
   const isMyMatch =
     myTeams.includes(match.team1.name) || myTeams.includes(match.team2.name);
   const hasData = (match.isLive || match.played) && !!match.espnId;
-  const [tab, setTab] = useState<ModalTab>(hasData ? "timeline" : "overview");
+
+  const storedTab = lsGet("wc2026:modal-tab") as ModalTab | null;
+  const validTabs: ModalTab[] = ["overview", "timeline", "stats", "lineup"];
+  const defaultTab: ModalTab = hasData
+    ? (storedTab && validTabs.includes(storedTab) ? storedTab : "timeline")
+    : "overview";
+  const [tab, setTab] = useState<ModalTab>(defaultTab);
+
+  const handleTabChange = useCallback((id: ModalTab) => {
+    setTab(id);
+    lsSet("wc2026:modal-tab", id);
+  }, []);
+
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
@@ -696,7 +709,7 @@ export default function MatchModal({
                 role="tab"
                 aria-selected={tab === tb.id}
                 className={`match-modal__tab${tab === tb.id ? " active" : ""}`}
-                onClick={() => setTab(tb.id)}
+                onClick={() => handleTabChange(tb.id)}
               >
                 {tb.label}
               </button>

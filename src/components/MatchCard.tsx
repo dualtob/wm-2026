@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";
 import type { Match, Lang } from "../types";
@@ -15,6 +15,32 @@ interface MatchCardProps {
 }
 
 const dateKeyFmt = new Intl.DateTimeFormat("en-CA", { timeZone: TZ });
+
+function getCountdown(kickoff: Date): string | null {
+  const diffMs = kickoff.getTime() - Date.now();
+  if (diffMs <= 0 || diffMs > 12 * 60 * 60 * 1000) return null;
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return null;
+  if (diffMins < 60) return `in ${diffMins}m`;
+  const h = Math.floor(diffMins / 60);
+  const m = diffMins % 60;
+  return m > 0 ? `in ${h}h ${m}m` : `in ${h}h`;
+}
+
+function useCountdown(kickoff: Date | null, enabled: boolean): string | null {
+  const [label, setLabel] = useState<string | null>(() =>
+    enabled && kickoff ? getCountdown(kickoff) : null
+  );
+  const update = useCallback(() => {
+    setLabel(enabled && kickoff ? getCountdown(kickoff) : null);
+  }, [kickoff, enabled]);
+  useEffect(() => {
+    if (!enabled || !kickoff) return;
+    const id = setInterval(update, 30_000);
+    return () => clearInterval(id);
+  }, [kickoff, enabled, update]);
+  return label;
+}
 
 function getTodayKey(): string {
   return dateKeyFmt.format(new Date());
@@ -95,6 +121,7 @@ export default function MatchCard({
   const isToday = !!kickoff && getDateKey(kickoff) === getTodayKey();
   const team1Lost = played && !isLive && score !== null && score.home < score.away;
   const team2Lost = played && !isLive && score !== null && score.away < score.home;
+  const countdown = useCountdown(kickoff, isToday && !isLive && !played);
   const showOdds = isToday && !isLive && !played;
 
   const { data: oddsData } = useMatchOdds(team1.name, team2.name, showOdds);
@@ -179,6 +206,7 @@ export default function MatchCard({
           ) : (
             <div className={`match-card__time${isToday ? " match-card__time--today" : ""}`}>
               {kickoff ? formatKickoff(kickoff, lang, isToday) : "TBD"}
+              {countdown && <span className="match-card__countdown">{countdown}</span>}
             </div>
           )}
           {statusLabel && (

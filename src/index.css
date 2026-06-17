@@ -928,6 +928,15 @@ h1, h2, h3, h4 {
   color: var(--accent);
 }
 
+.match-card__countdown {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
 .match-card__status {
   font-size: 0.7rem;
   font-weight: 600;

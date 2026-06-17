@@ -998,6 +998,33 @@ h1, h2, h3, h4 {
   z-index: 1;
 }
 
+.match-card__share {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition);
+  z-index: 2;
+}
+
+.match-card:hover .match-card__share,
+.match-card:focus-within .match-card__share {
+  opacity: 1;
+}
+
+.match-card__share:hover {
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+
 .match-card__odds {
   display: flex;
   align-items: center;

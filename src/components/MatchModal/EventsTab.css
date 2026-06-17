@@ -1,0 +1,105 @@
+/* ---------- Match Event timeline ---------- */
+.ev-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ev-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.ev-item--away {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.ev-item__min {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  min-width: 30px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ev-item--away .ev-item__min {
+  text-align: right;
+}
+
+.ev-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.ev-icon--ball {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.ev-card {
+  display: inline-block;
+  width: 10px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.ev-card--yellow {
+  background: #fbbf24;
+}
+
+.ev-card--red {
+  background: #ef4444;
+}
+
+.ev-item__player {
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 0;
+}
+
+.ev-player-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color var(--transition);
+}
+
+.ev-player-btn:hover {
+  text-decoration-color: var(--accent);
+}
+
+.ev-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.ev-assist {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 0.82rem;
+}

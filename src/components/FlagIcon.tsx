@@ -1,3 +1,4 @@
+import "./FlagIcon.css";
 import { useState } from "react";
 import { getFlagCode, getTeamColor, getTeam } from "../teams";
 

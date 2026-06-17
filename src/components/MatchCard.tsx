@@ -1,3 +1,4 @@
+import "./MatchCard.css";
 import { useEffect, useRef, useState, useCallback } from "react";
 import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";

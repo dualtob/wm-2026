@@ -1,3 +1,4 @@
+import "./MatchModal.css";
 import { useState, useCallback, useRef } from "react";
 import { lsGet, lsSet } from "../../utils/storage";
 import { useFocusTrap } from "../../hooks/useFocusTrap";

@@ -235,9 +235,10 @@ export function computeStandings(matches: Match[]): Standings {
   const groups: Record<string, Record<string, StandingRow>> = {};
 
   for (const m of matches) {
-    if (!m.group || m.isPlaceholder) continue;
-    if (!groups[m.group]) groups[m.group] = {};
-    const g = groups[m.group];
+    if (m.isPlaceholder) continue;
+    const groupKey = m.group ?? "League";
+    if (!groups[groupKey]) groups[groupKey] = {};
+    const g = groups[groupKey];
 
     const initTeam = (name: string) => {
       if (!g[name]) {

@@ -1,3 +1,4 @@
+import "./StatsTab.css";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useMatchSummary } from "../../hooks/useMatchSummary";
 import { t } from "../../i18n";

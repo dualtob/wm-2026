@@ -1,3 +1,4 @@
+import "./MatchListSkeleton.css";
 // Skeleton placeholder shown while fixtures load — matches the .match-card layout
 // so users see the structure they'll get rather than a blank spinner page.
 export default function MatchListSkeleton() {

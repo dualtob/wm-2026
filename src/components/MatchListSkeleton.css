@@ -1,0 +1,70 @@
+/* ---------- Match list skeleton ---------- */
+.match-skeleton-list {
+  padding: 12px 14px 20px;
+}
+
+.match-skeleton-header {
+  height: 14px;
+  width: 100px;
+  background: var(--bg-input);
+  border-radius: 7px;
+  margin: 18px 0 12px;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.match-skeleton-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: 12px;
+  margin-bottom: 8px;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.match-skeleton-stage {
+  height: 9px;
+  width: 60px;
+  background: var(--bg-input);
+  border-radius: 5px;
+  margin-bottom: 12px;
+}
+
+.match-skeleton-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.match-skeleton-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 4px;
+}
+
+.match-skeleton-team:last-child {
+  flex-direction: row-reverse;
+}
+
+.match-skeleton-flag {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-input);
+  flex-shrink: 0;
+}
+
+.match-skeleton-name {
+  height: 14px;
+  width: 40px;
+  background: var(--bg-input);
+  border-radius: 4px;
+}
+
+.match-skeleton-score {
+  height: 22px;
+  width: 56px;
+  background: var(--bg-input);
+  border-radius: 6px;
+}

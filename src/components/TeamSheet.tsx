@@ -1,3 +1,4 @@
+import "./TeamSheet.css";
 import { useState, useCallback, useRef } from "react";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import FlagIcon from "./FlagIcon";

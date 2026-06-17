@@ -1,3 +1,4 @@
+import "./MatchList.css";
 import { useState } from "react";
 import MatchCard from "./MatchCard";
 import { t } from "../i18n";

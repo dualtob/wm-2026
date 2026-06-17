@@ -1,3 +1,4 @@
+import "./Stats.css";
 import { useState } from "react";
 import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";

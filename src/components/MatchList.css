@@ -1,0 +1,100 @@
+/* ---------- Match List ---------- */
+.match-list {
+  padding: 0 14px 20px;
+}
+
+.list-end-marker {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0 4px;
+  opacity: 0.5;
+}
+
+.date-group {
+  margin-bottom: 14px;
+}
+
+.date-group__header {
+  padding: 18px 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  position: sticky;
+  top: calc(var(--sticky-top) + var(--subtab-height));
+  background: var(--bg);
+  z-index: 80;
+}
+
+.match-list--calendar .date-group__header {
+  top: calc(var(--sticky-top) + 80px); /* account for cal-toolbar (today btn + stage pills) */
+}
+
+.stage-banner {
+  display: inline-block;
+  margin: 24px 0 6px;
+  padding: 6px 14px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.date-group:first-child .stage-banner {
+  margin-top: 8px;
+}
+
+/* Scroll offset so sticky header doesn't cover the anchor */
+#calendar-today {
+  scroll-margin-top: calc(var(--sticky-top) + 80px + 18px);
+}
+
+.date-group__matches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------- Filter Bar ---------- */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  transition: all var(--transition);
+}
+
+.filter-btn--active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.filter-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+@media (min-width: 640px) {
+  .date-group__header {
+    top: 48px;
+  }
+}

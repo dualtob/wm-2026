@@ -1,3 +1,4 @@
+import "./Groups.css";
 import { useState } from "react";
 import GroupTable from "./GroupTable";
 import FlagIcon from "./FlagIcon";

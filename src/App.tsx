@@ -1,3 +1,4 @@
+import "./App.css";
 import { useState, useCallback, useEffect, useRef, useTransition, lazy, Suspense } from "react";
 import NavBar from "./components/NavBar";
 import MatchList from "./components/MatchList";

@@ -1,3 +1,4 @@
+import "./EventsTab.css";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useMatchGoals } from "../../hooks/useMatchDetail";
 import { t } from "../../i18n";

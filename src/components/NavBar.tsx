@@ -1,3 +1,4 @@
+import "./NavBar.css";
 import { t } from "../i18n";
 import type { Lang } from "../types";
 

@@ -1,3 +1,4 @@
+import "./PWAPrompt.css";
 import { useState, useEffect } from "react";
 import { usePWA } from "../hooks/usePWA";
 import { useSettings } from "../contexts/SettingsContext";

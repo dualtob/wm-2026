@@ -1,3 +1,4 @@
+import "./LiveTab.css";
 import { useSettings } from "../../contexts/SettingsContext";
 import { useLivePlays } from "../../hooks/useLivePlays";
 import { t } from "../../i18n";

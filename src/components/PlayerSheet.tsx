@@ -1,3 +1,4 @@
+import "./PlayerSheet.css";
 import { useCallback, useRef } from "react";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import FlagIcon from "./FlagIcon";

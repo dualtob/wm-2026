@@ -58,6 +58,7 @@ export const TEAMS: Record<string, TeamData> = {
 export function normalizeTeamName(name: string): string {
   if (!name) return name;
   const map: Record<string, string> = {
+    // National team aliases
     "United States": "USA",
     "United States of America": "USA",
     US: "USA",
@@ -74,6 +75,41 @@ export function normalizeTeamName(name: string): string {
     "Democratic Republic of Congo": "DR Congo",
     "Cabo Verde": "Cape Verde",
     Curacao: "Curaçao",
+    // Club aliases — ESPN returns long official names, fixtures use short names
+    "FC Bayern Munich": "Bayern Munich",
+    "Bayern München": "Bayern Munich",
+    "Borussia Dortmund": "Dortmund",
+    "BV Borussia 09 Dortmund": "Dortmund",
+    "Manchester City FC": "Manchester City",
+    "Arsenal FC": "Arsenal",
+    "Manchester United FC": "Manchester United",
+    "FC Barcelona": "Barcelona",
+    "Real Madrid CF": "Real Madrid",
+    "Chelsea FC": "Chelsea",
+    "Liverpool FC": "Liverpool",
+    "Tottenham Hotspur FC": "Tottenham",
+    "Tottenham Hotspur": "Tottenham",
+    "Newcastle United FC": "Newcastle",
+    "Newcastle United": "Newcastle",
+    "Aston Villa FC": "Aston Villa",
+    "West Ham United FC": "West Ham",
+    "West Ham United": "West Ham",
+    "Wolverhampton Wanderers FC": "Wolverhampton",
+    "Wolverhampton Wanderers": "Wolverhampton",
+    "Bayer 04 Leverkusen": "Leverkusen",
+    "Bayer Leverkusen": "Leverkusen",
+    "RB Leipzig": "Leipzig",
+    "Eintracht Frankfurt": "Frankfurt",
+    "VfB Stuttgart": "Stuttgart",
+    "Borussia Mönchengladbach": "Monchengladbach",
+    "SC Freiburg": "Freiburg",
+    "Union Berlin": "Union Berlin",
+    "TSG 1899 Hoffenheim": "Hoffenheim",
+    "TSG Hoffenheim": "Hoffenheim",
+    "SV Werder Bremen": "Werder Bremen",
+    "VfL Wolfsburg": "Wolfsburg",
+    "FC Augsburg": "Augsburg",
+    "FC Schalke 04": "Schalke",
   };
   return map[name] || name;
 }

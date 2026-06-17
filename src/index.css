@@ -760,6 +760,11 @@ h1, h2, h3, h4 {
   box-shadow: var(--shadow-md);
 }
 
+.match-card:has(.match-card__overlay:hover) .match-card__center {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: var(--radius-sm);
+}
+
 .match-card:has(.match-card__overlay:active) {
   transform: translateY(0);
 }
@@ -845,6 +850,8 @@ h1, h2, h3, h4 {
   gap: 2px;
   min-width: 80px;
   text-align: center;
+  padding: 4px 6px;
+  transition: background var(--transition);
 }
 
 .match-card__score {

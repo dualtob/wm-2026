@@ -30,7 +30,50 @@ const ROUND_ORDER = [
   "Final",
 ];
 
-function KnockoutBracket({ matches, lang }: { matches: Match[]; lang: Lang }) {
+function BracketMatch({
+  match,
+  onMatchClick,
+}: {
+  match: Match;
+  onMatchClick?: (m: Match) => void;
+}) {
+  const homeWin = match.played && match.score != null && match.score.home > match.score.away;
+  const awayWin = match.played && match.score != null && match.score.away > match.score.home;
+  return (
+    <button
+      className={`bm${match.isLive ? " bm--live" : ""}${match.played ? " bm--played" : ""}`}
+      onClick={() => onMatchClick?.(match)}
+      disabled={!onMatchClick}
+    >
+      <div className={`bm__team${homeWin ? " bm__team--win" : ""}${awayWin ? " bm__team--lose" : ""}`}>
+        <FlagIcon team={match.team1.name} size={14} />
+        <span className="bm__name">{match.team1.abbr}</span>
+        {match.score != null && <span className="bm__score">{match.score.home}</span>}
+      </div>
+      <div className={`bm__team${awayWin ? " bm__team--win" : ""}${homeWin ? " bm__team--lose" : ""}`}>
+        <FlagIcon team={match.team2.name} size={14} />
+        <span className="bm__name">{match.team2.abbr}</span>
+        {match.score != null && <span className="bm__score">{match.score.away}</span>}
+      </div>
+      {match.isLive && (
+        <div className="bm__live">
+          <span className="live-dot" aria-hidden="true" />
+          {match.liveMinute}
+        </div>
+      )}
+    </button>
+  );
+}
+
+function KnockoutBracket({
+  matches,
+  lang,
+  onMatchClick,
+}: {
+  matches: Match[];
+  lang: Lang;
+  onMatchClick?: (m: Match) => void;
+}) {
   const knockoutMatches = matches.filter((m) => !m.group && !m.isPlaceholder);
   const rounds: Record<string, Match[]> = {};
   for (const m of knockoutMatches) {
@@ -54,28 +97,19 @@ function KnockoutBracket({ matches, lang }: { matches: Match[]; lang: Lang }) {
   }
 
   return (
-    <div className="bracket">
-      {sortedRounds.map((roundName) => (
-        <div key={roundName} className="bracket__round">
-          <h4 className="bracket__round-title">{roundName}</h4>
-          <div className="bracket__matches">
-            {rounds[roundName].map((m) => (
-              <div key={m.id} className="bracket__match">
-                <div className="bracket__team">
-                  <FlagIcon team={m.team1.name} size={16} />
-                  <span>{m.team1.name}</span>
-                  {m.score && <strong>{m.score.home}</strong>}
-                </div>
-                <div className="bracket__team">
-                  <FlagIcon team={m.team2.name} size={16} />
-                  <span>{m.team2.name}</span>
-                  {m.score && <strong>{m.score.away}</strong>}
-                </div>
-              </div>
-            ))}
+    <div className="bracket-scroll" role="region" aria-label="Knockout bracket">
+      <div className="bracket-track">
+        {sortedRounds.map((roundName) => (
+          <div key={roundName} className="bracket-col">
+            <h4 className="bracket-col__title">{roundName}</h4>
+            <div className="bracket-col__matches">
+              {rounds[roundName].map((m) => (
+                <BracketMatch key={m.id} match={m} onMatchClick={onMatchClick} />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
@@ -85,9 +119,10 @@ interface GroupsProps {
   matches: Match[];
   lang: Lang;
   onTeamClick?: (name: string) => void;
+  onMatchClick?: (match: Match) => void;
 }
 
-export default function Groups({ standings, matches, lang, onTeamClick }: GroupsProps) {
+export default function Groups({ standings, matches, lang, onTeamClick, onMatchClick }: GroupsProps) {
   const [segment, setSegment] = useState<"groups" | "knockout">("groups");
   const sortedGroups = Object.keys(standings).sort();
   const bestThirds = getBestThirds(standings);
@@ -170,7 +205,7 @@ export default function Groups({ standings, matches, lang, onTeamClick }: Groups
         </div>
       )}
 
-      {segment === "knockout" && <KnockoutBracket matches={matches} lang={lang} />}
+      {segment === "knockout" && <KnockoutBracket matches={matches} lang={lang} onMatchClick={onMatchClick} />}
     </div>
   );
 }

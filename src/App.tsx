@@ -245,6 +245,7 @@ export default function App() {
                         matches={matches}
                         lang={lang}
                         onTeamClick={setOpenTeam}
+                        onMatchClick={setOpenMatch}
                       />
                     </Suspense>
                   </ErrorBoundary>

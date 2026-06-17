@@ -1,6 +1,6 @@
 export const TZ = "Europe/Berlin";
 export const LIVE_POLL_INTERVAL = 60_000;
-export const LIVE_POLL_INTERVAL_ACTIVE = 30_000;
+export const LIVE_POLL_INTERVAL_ACTIVE = 10_000;
 export const FIXTURES_CACHE_TTL = 5 * 60 * 1000;
 export const POLYMARKET_CACHE_TTL = 10 * 60 * 1000;
 

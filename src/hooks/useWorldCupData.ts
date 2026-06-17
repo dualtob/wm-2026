@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { computeStandings, mergeEspnScores } from "../api/fixtures";
 import { useFixtures, useScoreboard } from "./useFixtures";
 import { useChampionOdds } from "./useChampionOdds";
@@ -7,26 +7,25 @@ export function useWorldCupData() {
   const { data: fixturesResult, isLoading, isFetching, isError, error, refetch } = useFixtures();
   const rawMatches = fixturesResult?.matches ?? [];
 
-  // Track whether any merged match is live so the scoreboard can poll faster.
-  // We use a ref here to break the ordering dependency: useScoreboard must be
-  // called before we compute matches, but hasLive depends on merged matches.
-  // The ref holds the value from the previous render; it is updated below after
-  // the merge, so the NEXT render passes the correct hasLive to useScoreboard.
-  const hasLiveRef = useRef(false);
-  const { data: scoreboard } = useScoreboard(hasLiveRef.current);
+  // hasLive drives the scoreboard poll rate (60s → 10s when a match is live).
+  // State is used (not a ref) so that switching to active mode actually triggers
+  // a re-render that passes the new value into useScoreboard's internal ref.
+  const [hasLive, setHasLive] = useState(false);
+  const { data: scoreboard } = useScoreboard(hasLive);
 
   const matches = useMemo(
     () => mergeEspnScores(rawMatches, scoreboard ?? []),
     [rawMatches, scoreboard]
   );
 
-  // Update the ref for the next render — does not trigger a re-render.
-  hasLiveRef.current = matches.some((m) => m.isLive);
+  const liveMatches = useMemo(() => matches.filter((m) => m.isLive), [matches]);
+
+  useEffect(() => {
+    setHasLive(liveMatches.length > 0);
+  }, [liveMatches.length]);
 
   const standings = useMemo(() => computeStandings(matches), [matches]);
   const { data: championOdds } = useChampionOdds();
-
-  const liveMatches = useMemo(() => matches.filter((m) => m.isLive), [matches]);
 
   const upcomingMatches = useMemo(
     () =>

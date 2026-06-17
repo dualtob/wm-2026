@@ -1,3 +1,4 @@
+import "./Groups.css";
 import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";
 import type { StandingRow, Lang } from "../types";

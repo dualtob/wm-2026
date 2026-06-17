@@ -1,3 +1,4 @@
+import "./TeamPicker.css";
 import { useState, useMemo } from "react";
 import FlagIcon from "./FlagIcon";
 import { useSettings } from "../contexts/SettingsContext";

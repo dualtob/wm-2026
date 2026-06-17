@@ -1,16 +1,16 @@
 import { TEAMS } from "../teams";
-import type { RosterGroup, RosterPlayer, Leaders, Player } from "../types";
-import {
-  ESPN_SCOREBOARD_URL,
-  ESPN_CORE_URL,
-  ESPN_SITE_URL,
-  ESPN_CDN_URL,
-  LS_SCOREBOARD_KEY,
-} from "../constants";
+import type { LeagueConfig, RosterGroup, RosterPlayer, Leaders, Player } from "../types";
+import { ESPN_CDN_URL, LS_SCOREBOARD_KEY } from "../constants";
+import { WC2026 } from "../leagues/wc2026";
 import { lsGet, lsSet } from "../utils/storage";
 
-export async function fetchScoreboard(): Promise<unknown[]> {
-  const url = `${ESPN_SCOREBOARD_URL}&_=${Date.now()}`;
+const siteUrl = (slug: string) =>
+  `https://site.api.espn.com/apis/site/v2/sports/soccer/${slug}`;
+const coreUrl = (slug: string) =>
+  `https://sports.core.api.espn.com/v2/sports/soccer/leagues/${slug}`;
+
+export async function fetchScoreboard(config: LeagueConfig = WC2026): Promise<unknown[]> {
+  const url = `${siteUrl(config.espnSlug)}/scoreboard?dates=${config.espnScoreboardDates}&_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`ESPN HTTP ${res.status}`);
@@ -32,9 +32,9 @@ export async function fetchScoreboard(): Promise<unknown[]> {
   }
 }
 
-export async function fetchTeamRoster(espnId: string): Promise<RosterGroup | null> {
+export async function fetchTeamRoster(espnId: string, config: LeagueConfig = WC2026): Promise<RosterGroup | null> {
   if (!espnId) return null;
-  const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/teams/${espnId}/roster?_=${Date.now()}`;
+  const url = `${siteUrl(config.espnSlug)}/teams/${espnId}/roster?_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -112,14 +112,15 @@ function extractId(ref: string | undefined): string | null {
 const athleteCache: Record<string, { name: string; id: string }> = {};
 
 async function fetchAthleteName(
-  ref: string | undefined
+  ref: string | undefined,
+  config: LeagueConfig = WC2026
 ): Promise<{ name: string; id: string } | null> {
   if (!ref) return null;
   const id = extractId(ref);
   if (!id) return null;
   if (athleteCache[id]) return athleteCache[id];
   try {
-    const url = `${ESPN_CORE_URL}/seasons/2026/athletes/${id}`;
+    const url = `${coreUrl(config.espnSlug)}/seasons/${config.espnSeason}/athletes/${id}`;
     const res = await fetch(url);
     if (!res.ok) return null;
     const data = (await res.json()) as { displayName?: string; fullName?: string };
@@ -143,8 +144,8 @@ type LeaderCategory = {
   leaders?: LeaderEntry[];
 };
 
-export async function fetchLeaders(): Promise<Leaders> {
-  const url = `${ESPN_CORE_URL}/seasons/2026/types/1/leaders`;
+export async function fetchLeaders(config: LeagueConfig = WC2026): Promise<Leaders> {
+  const url = `${coreUrl(config.espnSlug)}/seasons/${config.espnSeason}/types/1/leaders`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -157,7 +158,7 @@ export async function fetchLeaders(): Promise<Leaders> {
       if (!cat?.leaders?.length) return [];
       const entries = cat.leaders.filter((e) => e.value > 0).slice(0, 20);
       const athletes = await Promise.all(
-        entries.map((e) => fetchAthleteName(e.athlete?.["$ref"]))
+        entries.map((e) => fetchAthleteName(e.athlete?.["$ref"], config))
       );
       return entries
         .map((e, i) => {
@@ -183,7 +184,7 @@ export async function fetchLeaders(): Promise<Leaders> {
     return { scorers, assists };
   } catch (err) {
     console.warn("Leaders fetch failed:", (err as Error).message);
-    const events = await fetchScoreboard();
+    const events = await fetchScoreboard(config);
     return aggregateFromScoreboard(events);
   }
 }
@@ -227,9 +228,9 @@ function aggregateFromScoreboard(events: unknown[]): Leaders {
   return { scorers, assists: [] };
 }
 
-export async function fetchMatchDetail(espnEventId: string): Promise<unknown | null> {
+export async function fetchMatchDetail(espnEventId: string, config: LeagueConfig = WC2026): Promise<unknown | null> {
   if (!espnEventId) return null;
-  const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard/${espnEventId}?_=${Date.now()}`;
+  const url = `${siteUrl(config.espnSlug)}/scoreboard/${espnEventId}?_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -240,9 +241,9 @@ export async function fetchMatchDetail(espnEventId: string): Promise<unknown | n
 }
 
 // Live play-by-play (Phase 5) — included in match summary commentary section
-export async function fetchMatchCommentary(espnEventId: string): Promise<unknown | null> {
+export async function fetchMatchCommentary(espnEventId: string, config: LeagueConfig = WC2026): Promise<unknown | null> {
   if (!espnEventId) return null;
-  const url = `${ESPN_SITE_URL}/summary?event=${espnEventId}&_=${Date.now()}`;
+  const url = `${siteUrl(config.espnSlug)}/summary?event=${espnEventId}&_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -253,9 +254,9 @@ export async function fetchMatchCommentary(espnEventId: string): Promise<unknown
 }
 
 // Player profile (Phase 4) — site API endpoint with bio + season stats
-export async function fetchPlayerProfile(playerId: string): Promise<unknown | null> {
+export async function fetchPlayerProfile(playerId: string, config: LeagueConfig = WC2026): Promise<unknown | null> {
   if (!playerId) return null;
-  const url = `${ESPN_SITE_URL}/athletes/${playerId}/overview?_=${Date.now()}`;
+  const url = `${siteUrl(config.espnSlug)}/athletes/${playerId}/overview?_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -267,9 +268,9 @@ export async function fetchPlayerProfile(playerId: string): Promise<unknown | nu
 
 // Match summary endpoint — contains boxscore (statistics) and rosters.
 // Used by Phase 2 (stats) and Phase 3 (lineup).
-export async function fetchMatchSummary(espnEventId: string): Promise<unknown | null> {
+export async function fetchMatchSummary(espnEventId: string, config: LeagueConfig = WC2026): Promise<unknown | null> {
   if (!espnEventId) return null;
-  const url = `${ESPN_SITE_URL}/summary?event=${espnEventId}&_=${Date.now()}`;
+  const url = `${siteUrl(config.espnSlug)}/summary?event=${espnEventId}&_=${Date.now()}`;
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);

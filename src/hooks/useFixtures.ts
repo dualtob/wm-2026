@@ -3,11 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchFixtures } from "../api/fixtures";
 import { fetchScoreboard } from "../api/espn";
 import { FIXTURES_CACHE_TTL, LIVE_POLL_INTERVAL, LIVE_POLL_INTERVAL_ACTIVE } from "../constants";
+import { WC2026 } from "../leagues/wc2026";
+import { queryKeys } from "./queryKeys";
 
 export function useFixtures() {
   return useQuery({
-    queryKey: ["fixtures"],
-    queryFn: fetchFixtures,
+    queryKey: queryKeys.fixtures(),
+    queryFn: () => fetchFixtures(WC2026),
     staleTime: FIXTURES_CACHE_TTL,
   });
 }
@@ -24,8 +26,8 @@ export function useScoreboard(hasLive: boolean) {
   );
 
   return useQuery({
-    queryKey: ["scoreboard"],
-    queryFn: fetchScoreboard,
+    queryKey: queryKeys.scoreboard(),
+    queryFn: () => fetchScoreboard(WC2026),
     staleTime: 0,
     refetchInterval: getInterval,
   });

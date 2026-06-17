@@ -4,12 +4,6 @@ export const LIVE_POLL_INTERVAL_ACTIVE = 30_000;
 export const FIXTURES_CACHE_TTL = 5 * 60 * 1000;
 export const POLYMARKET_CACHE_TTL = 10 * 60 * 1000;
 
-export const ESPN_SCOREBOARD_URL =
-  "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard?dates=20260611-20260719";
-export const ESPN_CORE_URL =
-  "https://sports.core.api.espn.com/v2/sports/soccer/leagues/fifa.world";
-export const ESPN_SITE_URL =
-  "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world";
 export const ESPN_CDN_URL = "https://a.espncdn.com/i/headshots/soccer/players/full";
 
 export const OPENFOOTBALL_PRIMARY =

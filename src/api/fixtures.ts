@@ -1,12 +1,11 @@
 import { normalizeTeamName, getTeam } from "../teams";
-import type { Match, TeamMeta, Standings, StandingRow, FixturesResult } from "../types";
+import type { LeagueConfig, Match, TeamMeta, Standings, StandingRow, FixturesResult } from "../types";
 import {
-  OPENFOOTBALL_PRIMARY,
-  OPENFOOTBALL_CDN,
   FIXTURES_CACHE_TTL,
   LS_FIXTURES_KEY,
   LS_FIXTURES_AT_KEY,
 } from "../constants";
+import { WC2026 } from "../leagues/wc2026";
 import { lsGet, lsSet } from "../utils/storage";
 
 type RawMatch = {
@@ -129,7 +128,7 @@ type EspnEvent = {
   }>;
 };
 
-export function mergeEspnScores(matches: Match[], espnEvents: unknown[]): Match[] {
+export function mergeEspnScores(matches: Match[], espnEvents: unknown[], config: LeagueConfig = WC2026): Match[] {
   if (!espnEvents?.length) return matches;
 
   type EspnEntry = {
@@ -156,8 +155,8 @@ export function mergeEspnScores(matches: Match[], espnEvents: unknown[]): Match[
     const away = competitors.find((c) => c.homeAway === "away");
     if (!home || !away) continue;
 
-    const homeName = normalizeTeamName(home.team?.displayName ?? home.team?.name ?? "");
-    const awayName = normalizeTeamName(away.team?.displayName ?? away.team?.name ?? "");
+    const homeName = config.normalizeTeam(home.team?.displayName ?? home.team?.name ?? "");
+    const awayName = config.normalizeTeam(away.team?.displayName ?? away.team?.name ?? "");
     const key = [homeName, awayName].sort().join("|");
 
     const statusName = e.status?.type?.name ?? "";
@@ -192,7 +191,7 @@ export function mergeEspnScores(matches: Match[], espnEvents: unknown[]): Match[
   });
 }
 
-export async function fetchFixtures(): Promise<FixturesResult> {
+export async function fetchFixtures(config: LeagueConfig = WC2026): Promise<FixturesResult> {
   const cachedData = lsGet(LS_FIXTURES_KEY);
   const cachedAt = lsGet(LS_FIXTURES_AT_KEY);
   const cacheAge = cachedAt ? Date.now() - parseInt(cachedAt) : Infinity;
@@ -207,13 +206,13 @@ export async function fetchFixtures(): Promise<FixturesResult> {
   }
 
   try {
-    const data = await fetchJSON(OPENFOOTBALL_PRIMARY);
+    const data = await fetchJSON(config.fixtureUrls.primary);
     lsSet(LS_FIXTURES_KEY, JSON.stringify(data));
     lsSet(LS_FIXTURES_AT_KEY, Date.now().toString());
     return { matches: parseOpenFootball(data), fromCache: false };
   } catch (primaryErr) {
     try {
-      const data = await fetchJSON(OPENFOOTBALL_CDN);
+      const data = await fetchJSON(config.fixtureUrls.cdn);
       lsSet(LS_FIXTURES_KEY, JSON.stringify(data));
       lsSet(LS_FIXTURES_AT_KEY, Date.now().toString());
       return { matches: parseOpenFootball(data), fromCache: false };

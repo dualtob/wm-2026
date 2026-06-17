@@ -7,11 +7,10 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import PWAPrompt from "./components/PWAPrompt";
 import MatchModal from "./components/MatchModal";
 import MatchListSkeleton from "./components/MatchListSkeleton";
-import TeamPicker from "./components/TeamPicker";
-import { useSettings, LANGS, LANG_LABELS } from "./contexts/SettingsContext";
+import SettingsModal from "./components/SettingsModal";
+import { useSettings } from "./contexts/SettingsContext";
 import { useWorldCupData } from "./hooks/useWorldCupData";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
-import { CloseIcon } from "./components/MatchModal";
 import { t } from "./i18n";
 import type { Match } from "./types";
 
@@ -37,15 +36,7 @@ function TabSkeleton() {
 }
 
 export default function App() {
-  const {
-    lang,
-    handleLangChange,
-    myTeams,
-    toggleMyTeam,
-    clearMyTeams,
-    showSettings,
-    setShowSettings,
-  } = useSettings();
+  const { lang, myTeams, toggleMyTeam, showSettings, setShowSettings } = useSettings();
   const {
     matches,
     standings,
@@ -416,66 +407,7 @@ export default function App() {
         </button>
       )}
 
-      {/* ── Settings modal ──────────────────────────────────────────────── */}
-      {showSettings && (
-        <div
-          className="modal-backdrop"
-          onClick={(e) => e.target === e.currentTarget && setShowSettings(false)}
-        >
-          <div className="settings-modal">
-            <div className="settings-modal__header">
-              <h2>{t(lang, "language")}</h2>
-              <button
-                className="sheet-close-btn"
-                onClick={() => setShowSettings(false)}
-                aria-label="Close"
-              >
-                <CloseIcon />
-              </button>
-            </div>
-
-            <div className="lang-options">
-              {LANGS.map((l) => (
-                <button
-                  key={l}
-                  className={`lang-option ${lang === l ? "lang-option--active" : ""}`}
-                  onClick={() => {
-                    handleLangChange(l);
-                    setShowSettings(false);
-                  }}
-                >
-                  {LANG_LABELS[l]}
-                  {lang === l && <span className="lang-option__check">✓</span>}
-                </button>
-              ))}
-            </div>
-
-            <hr className="settings-divider" />
-
-            <div className="settings-section">
-              <div className="settings-section__header">
-                <h3>{t(lang, "selTitle")}</h3>
-                {myTeams.length > 0 && (
-                  <button className="link-btn" onClick={clearMyTeams}>
-                    {t(lang, "selClearAll")}
-                  </button>
-                )}
-              </div>
-              <p className="settings-hint">
-                {myTeams.length} {t(lang, "selFollowed")} · {t(lang, "selToggleHint")}
-              </p>
-              <TeamPicker matches={matches} />
-            </div>
-
-            <button
-              className="btn btn--primary settings-done-btn"
-              onClick={() => setShowSettings(false)}
-            >
-              {t(lang, "selDone")}
-            </button>
-          </div>
-        </div>
-      )}
+      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
     </div>
   );
 }

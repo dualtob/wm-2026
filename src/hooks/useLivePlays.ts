@@ -1,6 +1,7 @@
 import { useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchMatchCommentary } from "../api/espn";
+import { queryKeys } from "./queryKeys";
 
 const LIVE_INTERVAL = 30_000;
 
@@ -16,7 +17,7 @@ export function useLivePlays(espnId: string | null | undefined, isLive: boolean)
   );
 
   return useQuery({
-    queryKey: ["liveCommentary", espnId],
+    queryKey: queryKeys.liveCommentary(espnId),
     queryFn: () => fetchMatchCommentary(espnId!),
     enabled: !!espnId,
     staleTime: 0,

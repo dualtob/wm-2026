@@ -1,5 +1,13 @@
 export type Lang = "en" | "de" | "es";
 
+export interface LeagueConfig {
+  espnSlug: string;
+  espnSeason: string;
+  espnScoreboardDates: string;
+  fixtureUrls: { primary: string; cdn: string };
+  normalizeTeam: (name: string) => string;
+}
+
 export interface TeamMeta {
   name: string;
   abbr: string;

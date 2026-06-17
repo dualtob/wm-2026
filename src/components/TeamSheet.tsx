@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import FlagIcon from "./FlagIcon";
 import MatchCard from "./MatchCard";
 import { getTeam } from "../teams";
@@ -105,6 +106,8 @@ export default function TeamSheet({
     [onClose]
   );
 
+  const sheetRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(sheetRef, true);
   const touchStartY = useRef(0);
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
@@ -123,7 +126,7 @@ export default function TeamSheet({
       aria-modal="true"
       aria-label={teamName}
     >
-      <div className="team-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      <div ref={sheetRef} className="team-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="sheet-handle" aria-hidden="true" />
         <div
           className="team-sheet__header"

@@ -1,4 +1,5 @@
 import { useCallback, useRef } from "react";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import FlagIcon from "./FlagIcon";
 import { CloseIcon } from "./MatchModal";
 import { usePlayerProfile } from "../hooks/usePlayerProfile";
@@ -119,6 +120,8 @@ export default function PlayerSheet({
 }: PlayerSheetProps) {
   const { lang } = useSettings();
   const { data, isLoading } = usePlayerProfile(playerId);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(sheetRef, true);
   const touchStartY = useRef(0);
 
   const handleBackdrop = useCallback(
@@ -145,7 +148,7 @@ export default function PlayerSheet({
 
   return (
     <div className="sheet-backdrop" onClick={handleBackdrop} role="dialog" aria-modal="true" aria-label={displayName}>
-      <div className="player-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+      <div ref={sheetRef} className="player-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="sheet-handle" aria-hidden="true" />
         <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
           <CloseIcon />

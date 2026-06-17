@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { lsGet, lsSet } from "../utils/storage";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import FlagIcon from "./FlagIcon";
 import { useSettings } from "../contexts/SettingsContext";
 import { useMatchGoals } from "../hooks/useMatchDetail";
@@ -610,6 +611,9 @@ export default function MatchModal({
     lsSet("wc2026:modal-tab", id);
   }, []);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(modalRef, true);
+
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
@@ -631,7 +635,7 @@ export default function MatchModal({
       aria-modal="true"
       aria-label={`${match.team1.name} vs ${match.team2.name}`}
     >
-      <div className={`match-modal${isMyMatch ? " match-modal--mine" : ""}`}>
+      <div ref={modalRef} className={`match-modal${isMyMatch ? " match-modal--mine" : ""}`}>
         <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
           <CloseIcon />
         </button>

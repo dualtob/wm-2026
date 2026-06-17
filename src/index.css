@@ -2020,8 +2020,138 @@ h1, h2, h3, h4 {
 .lp-tab {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
+  padding: 0;
+}
+
+/* ─── Pitch ─────────────────────────────────────────────────────────────── */
+.pitch {
+  background: #2d7a3a;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.06) 0px,
+      rgba(0,0,0,0.06) 28px,
+      transparent 28px,
+      transparent 56px
+    );
+  border-radius: var(--radius-md);
+  padding: 8px 4px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+  margin: 0 -4px;
+}
+
+.pitch__label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 2px 0 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pitch__formation {
+  margin-left: 6px;
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.pitch__midline {
+  height: 1px;
+  background: rgba(255,255,255,0.3);
+  margin: 4px 8px;
+  position: relative;
+}
+
+.pitch__midline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+}
+
+.pitch-half {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   padding: 4px 0;
+}
+
+.pitch-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.pitch-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 48px;
+  max-width: 64px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  transition: background var(--transition);
+  font: inherit;
+  color: inherit;
+}
+
+.pitch-player:not([disabled]):hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.pitch-player[disabled] {
+  cursor: default;
+}
+
+.pitch-player__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  color: #1a2b1a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pitch-player__name {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 56px;
+}
+
+.lp-bench {
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.lp-bench .lp-col {
+  flex: 1;
+  min-width: 0;
 }
 
 .lp-col {

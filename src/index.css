@@ -933,6 +933,45 @@ h1, h2, h3, h4 {
   z-index: 1;
 }
 
+.match-card__odds {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.match-card__odds-bar {
+  flex: 1;
+  display: flex;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  gap: 1px;
+}
+
+.match-card__odds-seg {
+  height: 100%;
+  min-width: 2px;
+}
+
+.match-card__odds-seg--home { background: var(--accent); }
+.match-card__odds-seg--draw { background: var(--text-tertiary); opacity: 0.5; }
+.match-card__odds-seg--away { background: color-mix(in srgb, var(--accent) 50%, var(--color-live)); }
+
+.match-card__odds-pct {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  min-width: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.match-card__odds-pct--away {
+  text-align: right;
+}
+
 /* ---------- Live dot ---------- */
 .live-dot {
   display: inline-block;

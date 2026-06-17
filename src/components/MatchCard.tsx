@@ -3,6 +3,8 @@ import FlagIcon from "./FlagIcon";
 import { t } from "../i18n";
 import type { Match, Lang } from "../types";
 import { TZ } from "../constants";
+import { useMatchOdds } from "../hooks/useMatchOdds";
+import type { MarketOdds } from "../types";
 
 interface MatchCardProps {
   match: Match;
@@ -32,6 +34,53 @@ function formatKickoff(date: Date, lang: Lang, isToday: boolean): string {
   return isToday ? `${t(lang, "relToday")} ${time}` : time;
 }
 
+function parseMatchProbs(
+  odds: MarketOdds | null | undefined,
+  team1Name: string,
+  team2Name: string
+): { home: number; draw: number; away: number } | null {
+  if (!odds?.outcomes?.length) return null;
+  const t1 = team1Name.toLowerCase();
+  const t2 = team2Name.toLowerCase();
+  let home: number | null = null;
+  let draw: number | null = null;
+  let away: number | null = null;
+  for (const o of odds.outcomes) {
+    const label = o.outcome.toLowerCase();
+    if (label === "draw" || label === "tie") draw = o.probability;
+    else if (label.includes(t1) || label === "home") home = o.probability;
+    else if (label.includes(t2) || label === "away") away = o.probability;
+  }
+  if (home === null && away === null) return null;
+  const total = (home ?? 0) + (draw ?? 0) + (away ?? 0);
+  if (total === 0) return null;
+  const scale = 1 / total;
+  return { home: (home ?? 0) * scale, draw: (draw ?? 0) * scale, away: (away ?? 0) * scale };
+}
+
+function OddsBar({
+  home,
+  draw,
+  away,
+}: {
+  home: number;
+  draw: number;
+  away: number;
+}) {
+  const fmt = (n: number) => `${Math.round(n * 100)}%`;
+  return (
+    <div className="match-card__odds" aria-label={`Win probability: home ${fmt(home)}, draw ${fmt(draw)}, away ${fmt(away)}`}>
+      <span className="match-card__odds-pct">{fmt(home)}</span>
+      <div className="match-card__odds-bar">
+        <div className="match-card__odds-seg match-card__odds-seg--home" style={{ flex: home }} />
+        {draw > 0 && <div className="match-card__odds-seg match-card__odds-seg--draw" style={{ flex: draw }} />}
+        <div className="match-card__odds-seg match-card__odds-seg--away" style={{ flex: away }} />
+      </div>
+      <span className="match-card__odds-pct match-card__odds-pct--away">{fmt(away)}</span>
+    </div>
+  );
+}
+
 export default function MatchCard({
   match,
   lang,
@@ -44,6 +93,10 @@ export default function MatchCard({
 
   const isMyMatch = myTeams.includes(team1.name) || myTeams.includes(team2.name);
   const isToday = !!kickoff && getDateKey(kickoff) === getTodayKey();
+  const showOdds = isToday && !isLive && !played;
+
+  const { data: oddsData } = useMatchOdds(team1.name, team2.name, showOdds);
+  const probs = showOdds ? parseMatchProbs(oddsData as MarketOdds | null, team1.name, team2.name) : null;
 
   // Pulse the side whose score just increased
   const prev = useRef(score);
@@ -143,6 +196,10 @@ export default function MatchCard({
           <FlagIcon team={team2.name} size={28} />
         </button>
       </div>
+
+      {probs && (
+        <OddsBar home={probs.home} draw={probs.draw} away={probs.away} />
+      )}
 
       {match.venue && (
         <div className="match-card__venue">

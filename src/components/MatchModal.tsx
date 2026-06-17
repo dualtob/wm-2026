@@ -710,6 +710,15 @@ export default function MatchModal({
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, true);
 
+  const touchStartY = useRef(0);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const delta = e.changedTouches[0].clientY - touchStartY.current;
+    if (delta > 80 && (modalRef.current?.scrollTop ?? 0) === 0) onClose();
+  }, [onClose]);
+
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
@@ -731,7 +740,13 @@ export default function MatchModal({
       aria-modal="true"
       aria-label={`${match.team1.name} vs ${match.team2.name}`}
     >
-      <div ref={modalRef} className={`match-modal${isMyMatch ? " match-modal--mine" : ""}`}>
+      <div
+        ref={modalRef}
+        className={`match-modal${isMyMatch ? " match-modal--mine" : ""}`}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="sheet-handle" aria-hidden="true" />
         <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
           <CloseIcon />
         </button>

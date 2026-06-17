@@ -292,7 +292,7 @@ export default function App() {
       </main>
 
       <PWAPrompt />
-      <NavBar activeTab={activeTab} onTabChange={handleTabChange} lang={lang} />
+      <NavBar activeTab={activeTab} onTabChange={handleTabChange} lang={lang} liveCount={liveMatches.length} />
 
       {/* ── Match modal ─────────────────────────────────────────────────── */}
       {openMatch && (

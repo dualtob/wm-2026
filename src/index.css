@@ -562,6 +562,17 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
 }
 
+.nav-tab__live-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--live);
+  border: 2px solid var(--bg-nav);
+}
+
 /* ---------- Sub-tabs ---------- */
 .subtab-bar {
   display: flex;
@@ -1772,13 +1783,17 @@ h1, h2, h3, h4 {
 .match-modal {
   background: var(--bg-modal);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 0 20px 20px;
   width: 100%;
   max-width: 400px;
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   position: relative;
   overflow-x: hidden;
+}
+
+.match-modal > .sheet-handle {
+  margin: 10px auto 0;
 }
 
 .match-modal--mine::before {
@@ -1793,7 +1808,7 @@ h1, h2, h3, h4 {
 
 .match-modal .sheet-close-btn {
   position: absolute;
-  top: 14px;
+  top: 10px;
   right: 14px;
   background: var(--bg-input);
   color: var(--text-secondary);

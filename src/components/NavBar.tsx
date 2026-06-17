@@ -7,6 +7,7 @@ interface NavBarProps {
   activeTab: TabId;
   onTabChange: (tab: TabId) => void;
   lang: Lang;
+  liveCount?: number;
 }
 
 const TABS: Array<{ id: TabId; labelKey: Parameters<typeof t>[1]; icon: React.ReactNode }> = [
@@ -59,7 +60,7 @@ const TABS: Array<{ id: TabId; labelKey: Parameters<typeof t>[1]; icon: React.Re
   },
 ];
 
-export default function NavBar({ activeTab, onTabChange, lang }: NavBarProps) {
+export default function NavBar({ activeTab, onTabChange, lang, liveCount = 0 }: NavBarProps) {
   return (
     <nav className="nav-bar" role="tablist" aria-label="Main navigation">
       {TABS.map((tab) => (
@@ -71,7 +72,12 @@ export default function NavBar({ activeTab, onTabChange, lang }: NavBarProps) {
           className={`nav-tab ${activeTab === tab.id ? "nav-tab--active" : ""}`}
           onClick={() => onTabChange(tab.id)}
         >
-          <span className="nav-tab__icon">{tab.icon}</span>
+          <span className="nav-tab__icon">
+            {tab.icon}
+            {tab.id === "upcoming" && liveCount > 0 && (
+              <span className="nav-tab__live-badge" aria-label={`${liveCount} live`} />
+            )}
+          </span>
           <span className="nav-tab__label">{t(lang, tab.labelKey)}</span>
         </button>
       ))}

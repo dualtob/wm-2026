@@ -80,6 +80,36 @@ export default function App() {
     [startTransition]
   );
 
+  // Scroll-to-top visibility
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const mainRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+    const onScroll = () => setShowScrollTop(el.scrollTop > 300);
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Pull-to-refresh
+  const pullStartY = useRef(-1);
+  const [pulling, setPulling] = useState(false);
+  const handlePullStart = useCallback((e: React.TouchEvent<HTMLElement>) => {
+    const el = mainRef.current;
+    pullStartY.current = el && el.scrollTop === 0 ? e.touches[0].clientY : -1;
+  }, []);
+  const handlePullMove = useCallback((e: React.TouchEvent<HTMLElement>) => {
+    if (pullStartY.current < 0) return;
+    setPulling(e.touches[0].clientY - pullStartY.current > 60);
+  }, []);
+  const handlePullEnd = useCallback((e: React.TouchEvent<HTMLElement>) => {
+    if (pullStartY.current >= 0 && e.changedTouches[0].clientY - pullStartY.current > 60 && !isFetching) {
+      refetch();
+    }
+    pullStartY.current = -1;
+    setPulling(false);
+  }, [isFetching, refetch]);
+
   // Refresh button: brief success flash after fetching completes
   const [refreshDone, setRefreshDone] = useState(false);
   const wasFetching = useRef(isFetching);
@@ -157,7 +187,16 @@ export default function App() {
       </header>
 
       {/* ── Main content ───────────────────────────────────────────────── */}
-      <main className="app-main" id={`panel-${activeTab}`} role="tabpanel">
+      <main
+        ref={mainRef}
+        className="app-main"
+        id={`panel-${activeTab}`}
+        role="tabpanel"
+        onTouchStart={handlePullStart}
+        onTouchMove={handlePullMove}
+        onTouchEnd={handlePullEnd}
+      >
+        {pulling && <div className="pull-indicator" aria-hidden="true"><div className="spinner" /></div>}
         <ErrorBoundary>
           {isLoading ? (
             <MatchListSkeleton />
@@ -362,6 +401,18 @@ export default function App() {
             />
           </Suspense>
         </ErrorBoundary>
+      )}
+
+      {showScrollTop && (
+        <button
+          className="scroll-top-btn"
+          aria-label="Scroll to top"
+          onClick={() => mainRef.current?.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+            <polyline points="18 15 12 9 6 15" />
+          </svg>
+        </button>
       )}
 
       {/* ── Settings modal ──────────────────────────────────────────────── */}

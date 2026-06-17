@@ -1513,6 +1513,70 @@ h1, h2, h3, h4 {
   text-align: right;
 }
 
+.mini-group {
+  padding: 0 20px 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-group__title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.mini-group__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.mini-group__row td {
+  padding: 4px 4px;
+  color: var(--text-secondary);
+}
+
+.mini-group__row--self td {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.mini-group__row--qualify .mini-group__pos {
+  color: var(--accent);
+}
+
+.mini-group__pos {
+  width: 20px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-tertiary);
+}
+
+.mini-group__team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-group__team span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mini-group__num {
+  width: 28px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mini-group__gd {
+  color: var(--text-tertiary);
+}
+
 .odds-bar {
   display: flex;
   align-items: center;

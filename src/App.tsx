@@ -331,6 +331,7 @@ export default function App() {
               matches={matches}
               lang={lang}
               myTeams={myTeams}
+              standings={standings}
               onToggleMyTeam={toggleMyTeam}
               onClose={() => setOpenTeam(null)}
               onMatchClick={setOpenMatch}

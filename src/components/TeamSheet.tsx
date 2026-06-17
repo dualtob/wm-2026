@@ -6,7 +6,7 @@ import { getTeam } from "../teams";
 import { t } from "../i18n";
 import { useTeamRoster } from "../hooks/useTeamRoster";
 import { useTeamOdds } from "../hooks/useTeamOdds";
-import type { Match, RosterGroup, TeamOdds, Lang } from "../types";
+import type { Match, RosterGroup, TeamOdds, Lang, StandingRow, Standings } from "../types";
 
 interface OddsBarProps {
   label: string;
@@ -65,11 +65,49 @@ function SquadSection({ title, players }: SquadSectionProps) {
   );
 }
 
+function MiniGroupTable({
+  groupName,
+  rows,
+  teamName,
+}: {
+  groupName: string;
+  rows: StandingRow[];
+  teamName: string;
+}) {
+  return (
+    <div className="mini-group">
+      <p className="mini-group__title">{groupName}</p>
+      <table className="mini-group__table">
+        <tbody>
+          {rows.map((row, idx) => (
+            <tr
+              key={row.team}
+              className={`mini-group__row${row.team === teamName ? " mini-group__row--self" : ""}${idx < 2 ? " mini-group__row--qualify" : ""}`}
+            >
+              <td className="mini-group__pos">{idx + 1}</td>
+              <td className="mini-group__team">
+                <FlagIcon team={row.team} size={14} />
+                <span>{row.team}</span>
+              </td>
+              <td className="mini-group__num">{row.played}</td>
+              <td className="mini-group__num">{row.points}</td>
+              <td className="mini-group__num mini-group__gd">
+                {row.goalDiff > 0 ? `+${row.goalDiff}` : row.goalDiff}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 interface TeamSheetProps {
   teamName: string;
   matches: Match[];
   lang: Lang;
   myTeams: string[];
+  standings?: Standings;
   onToggleMyTeam?: (name: string) => void;
   onClose: () => void;
   onMatchClick?: (match: Match) => void;
@@ -80,6 +118,7 @@ export default function TeamSheet({
   matches,
   lang,
   myTeams,
+  standings,
   onToggleMyTeam,
   onClose,
   onMatchClick,
@@ -98,6 +137,13 @@ export default function TeamSheet({
   const teamMatches = matches
     .filter((m) => m.team1.name === teamName || m.team2.name === teamName)
     .sort((a, b) => (a.kickoff?.getTime() ?? 0) - (b.kickoff?.getTime() ?? 0));
+
+  // Find which group this team is in
+  const groupEntry = standings
+    ? Object.entries(standings).find(([, rows]) => rows.some((r) => r.team === teamName))
+    : null;
+  const groupName = groupEntry ? groupEntry[0] : null;
+  const groupRows = groupEntry ? groupEntry[1] : null;
 
   const handleBackdropClick = useCallback(
     (e: React.MouseEvent) => {
@@ -172,6 +218,10 @@ export default function TeamSheet({
               <p className="team-odds__attribution">{t(lang, "predAttribution")}</p>
             </div>
           )}
+
+        {groupName && groupRows && (
+          <MiniGroupTable groupName={groupName} rows={groupRows} teamName={teamName} />
+        )}
 
         <div className="segment-control" role="tablist">
           <button

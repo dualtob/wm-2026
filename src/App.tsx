@@ -60,7 +60,10 @@ export default function App() {
   } = useWorldCupData();
   const isOnline = useOnlineStatus();
 
-  const [activeTab, setActiveTab] = useState<TabId>("upcoming");
+  const [activeTab, setActiveTab] = useState<TabId>(() => {
+    const s = localStorage.getItem("wc2026:activeTab");
+    return (["upcoming", "calendar", "groups", "stats"].includes(s ?? "") ? s : "upcoming") as TabId;
+  });
   const [upcomingSubTab, setUpcomingSubTab] = useState<"upcoming" | "results">("upcoming");
   const [, startTransition] = useTransition();
 
@@ -69,7 +72,10 @@ export default function App() {
   const [openPlayer, setOpenPlayer] = useState<OpenPlayer | null>(null);
 
   const handleTabChange = useCallback(
-    (tab: TabId) => startTransition(() => setActiveTab(tab)),
+    (tab: TabId) => {
+      startTransition(() => setActiveTab(tab));
+      localStorage.setItem("wc2026:activeTab", tab);
+    },
     [startTransition]
   );
 

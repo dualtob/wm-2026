@@ -93,6 +93,8 @@ export default function MatchCard({
 
   const isMyMatch = myTeams.includes(team1.name) || myTeams.includes(team2.name);
   const isToday = !!kickoff && getDateKey(kickoff) === getTodayKey();
+  const team1Lost = played && !isLive && score !== null && score.home < score.away;
+  const team2Lost = played && !isLive && score !== null && score.away < score.home;
   const showOdds = isToday && !isLive && !played;
 
   const { data: oddsData } = useMatchOdds(team1.name, team2.name, showOdds);
@@ -151,7 +153,7 @@ export default function MatchCard({
 
       <div className="match-card__body">
         <button
-          className="match-card__team"
+          className={`match-card__team${team1Lost ? " match-card__team--lost" : ""}`}
           onClick={() => onTeamClick?.(team1.name)}
           aria-label={team1.name}
         >
@@ -188,7 +190,7 @@ export default function MatchCard({
         </div>
 
         <button
-          className="match-card__team match-card__team--right"
+          className={`match-card__team match-card__team--right${team2Lost ? " match-card__team--lost" : ""}`}
           onClick={() => onTeamClick?.(team2.name)}
           aria-label={team2.name}
         >

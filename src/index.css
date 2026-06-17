@@ -677,6 +677,13 @@ h1, h2, h3, h4 {
   padding: 0 14px 20px;
 }
 
+.list-end-marker {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0 4px;
+  opacity: 0.5;
+}
+
 .date-group {
   margin-bottom: 14px;
 }
@@ -852,6 +859,10 @@ h1, h2, h3, h4 {
 .match-card__team--right {
   flex-direction: row-reverse;
   text-align: right;
+}
+
+.match-card__team--lost {
+  opacity: 0.45;
 }
 
 .match-card__team-name {

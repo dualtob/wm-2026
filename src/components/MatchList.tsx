@@ -171,6 +171,7 @@ export default function MatchList({
           </section>
         );
       })}
+      <div className="list-end-marker" aria-hidden="true" />
     </div>
   );
 }

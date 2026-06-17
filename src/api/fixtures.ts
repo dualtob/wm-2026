@@ -122,7 +122,7 @@ type EspnCompetitor = {
 
 type EspnEvent = {
   id?: string;
-  status?: { type?: { name?: string }; displayClock?: string; period?: number };
+  status?: { type?: { name?: string; state?: string }; displayClock?: string; period?: number };
   competitions?: Array<{
     competitors?: EspnCompetitor[];
   }>;
@@ -160,13 +160,14 @@ export function mergeEspnScores(matches: Match[], espnEvents: unknown[], config:
     const key = [homeName, awayName].sort().join("|");
 
     const statusName = e.status?.type?.name ?? "";
+    const statusState = e.status?.type?.state ?? "";
     const displayClock = e.status?.displayClock ?? "";
 
     byTeamPair[key] = {
       homeScore: parseInt(String(home.score)) || 0,
       awayScore: parseInt(String(away.score)) || 0,
-      isLive: statusName === "STATUS_IN_PROGRESS",
-      isFinal: statusName === "STATUS_FINAL" || statusName === "STATUS_FULL_TIME",
+      isLive: statusState === "in",
+      isFinal: statusState === "post",
       isPenalties: statusName.includes("PENALTY"),
       liveMinute: displayClock || null,
       liveStatus: statusName,

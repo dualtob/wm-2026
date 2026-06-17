@@ -37,6 +37,16 @@ function makeLeagueMatch(
   };
 }
 
+const ESPN_STATE: Record<string, string> = {
+  STATUS_FINAL: "post",
+  STATUS_FULL_TIME: "post",
+  STATUS_IN_PROGRESS: "in",
+  STATUS_FIRST_HALF: "in",
+  STATUS_SECOND_HALF: "in",
+  STATUS_HALFTIME: "in",
+  STATUS_SCHEDULED: "pre",
+};
+
 function makeEspnEvent(
   homeName: string,
   awayName: string,
@@ -46,7 +56,7 @@ function makeEspnEvent(
 ) {
   return {
     id: "99",
-    status: { type: { name: status }, displayClock: "" },
+    status: { type: { name: status, state: ESPN_STATE[status] ?? "pre" }, displayClock: "" },
     competitions: [
       {
         competitors: [

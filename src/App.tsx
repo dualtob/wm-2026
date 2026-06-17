@@ -68,6 +68,7 @@ export default function App() {
   const [, startTransition] = useTransition();
 
   const [openTeam, setOpenTeam] = useState<string | null>(null);
+  const [calStage, setCalStage] = useState<"all" | "group" | "knockout">("all");
   const [openMatch, setOpenMatch] = useState<Match | null>(null);
   const [openPlayer, setOpenPlayer] = useState<OpenPlayer | null>(null);
 
@@ -228,16 +229,32 @@ export default function App() {
                     >
                       {t(lang, "calToday")} ↓
                     </button>
+                    <div className="cal-stage-pills">
+                      {(["all", "group", "knockout"] as const).map((s) => (
+                        <button
+                          key={s}
+                          className={`cal-stage-pill${calStage === s ? " cal-stage-pill--active" : ""}`}
+                          onClick={() => setCalStage(s)}
+                        >
+                          {s === "all" ? t(lang, "filterAll") : s === "group" ? t(lang, "segGroups") : t(lang, "segKnockout")}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <MatchList
-                    matches={matches.filter((m) => !m.isPlaceholder)}
+                    matches={matches.filter((m) => {
+                      if (m.isPlaceholder) return false;
+                      if (calStage === "group") return m.group !== null;
+                      if (calStage === "knockout") return m.group === null;
+                      return true;
+                    })}
                     lang={lang}
                     myTeams={myTeams}
                     showFilter={false}
                     onTeamClick={setOpenTeam}
                     onMatchClick={setOpenMatch}
                     mode="calendar"
-                    markTodayAnchor={true}
+                    markTodayAnchor={calStage === "all"}
                   />
                 </div>
               )}

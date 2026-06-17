@@ -702,7 +702,7 @@ h1, h2, h3, h4 {
 }
 
 .match-list--calendar .date-group__header {
-  top: calc(var(--sticky-top) + 48px); /* account for cal-toolbar */
+  top: calc(var(--sticky-top) + 80px); /* account for cal-toolbar (today btn + stage pills) */
 }
 
 .stage-banner {
@@ -724,7 +724,7 @@ h1, h2, h3, h4 {
 
 /* Scroll offset so sticky header doesn't cover the anchor */
 #calendar-today {
-  scroll-margin-top: calc(var(--sticky-top) + 48px + 18px);
+  scroll-margin-top: calc(var(--sticky-top) + 80px + 18px);
 }
 
 /* ---------- Calendar toolbar ---------- */
@@ -736,6 +736,7 @@ h1, h2, h3, h4 {
   padding: 8px 14px;
   display: flex;
   align-items: center;
+  gap: 10px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -747,9 +748,42 @@ h1, h2, h3, h4 {
   border-radius: var(--radius-full);
   padding: 5px 14px;
   transition: background var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .today-btn:hover {
+  background: var(--border);
+}
+
+.cal-stage-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cal-stage-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.cal-stage-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-input);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+
+.cal-stage-pill--active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.cal-stage-pill:hover:not(.cal-stage-pill--active) {
   background: var(--border);
 }
 

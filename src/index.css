@@ -1314,6 +1314,19 @@ h1, h2, h3, h4 {
   }
 }
 
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  margin: 8px auto 4px;
+  opacity: 0.6;
+}
+
+@media (min-width: 480px) {
+  .sheet-handle { display: none; }
+}
+
 .team-sheet {
   background: var(--bg-modal);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import FlagIcon from "./FlagIcon";
 import MatchCard from "./MatchCard";
 import { getTeam } from "../teams";
@@ -105,6 +105,14 @@ export default function TeamSheet({
     [onClose]
   );
 
+  const touchStartY = useRef(0);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (e.changedTouches[0].clientY - touchStartY.current > 80) onClose();
+  }, [onClose]);
+
   const oddsData = odds as TeamOdds | null | undefined;
 
   return (
@@ -115,7 +123,8 @@ export default function TeamSheet({
       aria-modal="true"
       aria-label={teamName}
     >
-      <div className="team-sheet">
+      <div className="team-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div className="sheet-handle" aria-hidden="true" />
         <div
           className="team-sheet__header"
           style={{ "--team-color": teamColor } as React.CSSProperties}

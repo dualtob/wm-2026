@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import FlagIcon from "./FlagIcon";
 import { CloseIcon } from "./MatchModal";
 import { usePlayerProfile } from "../hooks/usePlayerProfile";
@@ -119,6 +119,7 @@ export default function PlayerSheet({
 }: PlayerSheetProps) {
   const { lang } = useSettings();
   const { data, isLoading } = usePlayerProfile(playerId);
+  const touchStartY = useRef(0);
 
   const handleBackdrop = useCallback(
     (e: React.MouseEvent) => {
@@ -126,6 +127,14 @@ export default function PlayerSheet({
     },
     [onClose]
   );
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (e.changedTouches[0].clientY - touchStartY.current > 80) onClose();
+  }, [onClose]);
 
   const profile = parseProfile(data);
   const stats = parseSeasonStats(data);
@@ -136,7 +145,8 @@ export default function PlayerSheet({
 
   return (
     <div className="sheet-backdrop" onClick={handleBackdrop} role="dialog" aria-modal="true" aria-label={displayName}>
-      <div className="player-sheet">
+      <div className="player-sheet" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <div className="sheet-handle" aria-hidden="true" />
         <button className="sheet-close-btn" onClick={onClose} aria-label="Close">
           <CloseIcon />
         </button>

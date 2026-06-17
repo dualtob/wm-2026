@@ -5,7 +5,7 @@ import {
   parseMatchLineup,
   parseLivePlays,
   getCompetitionFromDetail,
-} from "./MatchModal";
+} from "../api/espn-parsers";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 

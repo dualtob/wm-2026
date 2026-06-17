@@ -575,7 +575,7 @@ export function CloseIcon() {
 
 // ─── Tab types (expanded per phase) ─────────────────────────────────────────
 
-export type ModalTab = "overview" | "live" | "events" | "stats" | "lineup";
+export type ModalTab = "overview" | "timeline" | "stats" | "lineup";
 
 // ─── Main modal ─────────────────────────────────────────────────────────────
 
@@ -596,17 +596,14 @@ export default function MatchModal({
   const isMyMatch =
     myTeams.includes(match.team1.name) || myTeams.includes(match.team2.name);
   const hasData = (match.isLive || match.played) && !!match.espnId;
-  const [tab, setTab] = useState<ModalTab>(match.isLive && hasData ? "live" : "overview");
+  const [tab, setTab] = useState<ModalTab>(hasData ? "timeline" : "overview");
   const locale = lang === "de" ? "de-DE" : lang === "en" ? "en-US" : "es-ES";
 
   const tabs: Array<{ id: ModalTab; label: string }> = [
     { id: "overview", label: t(lang, "tabOverview") },
-    ...(match.isLive && hasData
-      ? [{ id: "live" as ModalTab, label: t(lang, "liveTitle") }]
-      : []),
     ...(hasData
       ? [
-          { id: "events" as ModalTab, label: t(lang, "tabEvents") },
+          { id: "timeline" as ModalTab, label: t(lang, "tabTimeline") },
           { id: "stats" as ModalTab, label: t(lang, "tabStats") },
           { id: "lineup" as ModalTab, label: t(lang, "tabLineup") },
         ]
@@ -710,9 +707,10 @@ export default function MatchModal({
         {/* Tab content */}
         <div key={tab} className="match-modal__panel">
           {tab === "overview" && <OverviewTab match={match} locale={locale} />}
-          {tab === "live" && hasData && <LiveTab match={match} />}
-          {tab === "events" && hasData && (
-            <EventsTab match={match} onPlayerClick={onPlayerClick} />
+          {tab === "timeline" && hasData && (
+            match.isLive
+              ? <LiveTab match={match} />
+              : <EventsTab match={match} onPlayerClick={onPlayerClick} />
           )}
           {tab === "stats" && hasData && <StatsTab match={match} />}
           {tab === "lineup" && hasData && (

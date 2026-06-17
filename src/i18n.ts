@@ -129,6 +129,7 @@ const strings = {
     liveTitle: "En vivo",
     searchTeams: "Buscar selección…",
     searchNoResults: "Sin resultados",
+    tabTimeline: "Cronología",
   },
 
   en: {
@@ -257,6 +258,7 @@ const strings = {
     liveTitle: "Live",
     searchTeams: "Search teams…",
     searchNoResults: "No matches",
+    tabTimeline: "Timeline",
   },
 
   de: {
@@ -385,6 +387,7 @@ const strings = {
     liveTitle: "Live",
     searchTeams: "Team suchen…",
     searchNoResults: "Keine Treffer",
+    tabTimeline: "Zeitstrahl",
   },
 } as const;
 

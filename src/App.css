@@ -7,6 +7,10 @@
   padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
 }
 
+@media (min-width: 900px) {
+  .app { max-width: 860px; }
+}
+
 /* ---------- Header ---------- */
 .app-header {
   position: sticky;

@@ -111,6 +111,8 @@
   color: var(--text-primary);
 }
 
+.match-card__fullname { display: none; }
+
 .match-card__center {
   display: flex;
   flex-direction: column;
@@ -267,6 +269,11 @@
 
 .match-card__odds-pct--away {
   text-align: right;
+}
+
+@media (min-width: 600px) {
+  .match-card__abbr { display: none; }
+  .match-card__fullname { display: inline; }
 }
 
 @media (min-width: 640px) {

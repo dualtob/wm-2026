@@ -186,7 +186,10 @@ export default function MatchCard({
           aria-label={team1.name}
         >
           <FlagIcon team={team1.name} size={28} />
-          <span className="match-card__team-name">{team1.abbr}</span>
+          <span className="match-card__team-name">
+            <span className="match-card__abbr">{team1.abbr}</span>
+            <span className="match-card__fullname">{team1.name}</span>
+          </span>
         </button>
 
         <div className="match-card__center">
@@ -223,7 +226,10 @@ export default function MatchCard({
           onClick={() => onTeamClick?.(team2.name)}
           aria-label={team2.name}
         >
-          <span className="match-card__team-name">{team2.abbr}</span>
+          <span className="match-card__team-name">
+            <span className="match-card__abbr">{team2.abbr}</span>
+            <span className="match-card__fullname">{team2.name}</span>
+          </span>
           <FlagIcon team={team2.name} size={28} />
         </button>
       </div>

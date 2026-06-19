@@ -7,6 +7,8 @@
   transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
   position: relative;
   overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Invisible full-card button — primary interactive surface */

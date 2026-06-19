@@ -17,16 +17,23 @@
   border-radius: inherit;
   background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
-.match-card:has(.match-card__overlay:hover) {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-}
+@media (hover: hover) {
+  .match-card:has(.match-card__overlay:hover) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
 
-.match-card:has(.match-card__overlay:hover) .match-card__center {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-  border-radius: var(--radius-sm);
+  .match-card:has(.match-card__overlay:hover) .match-card__center {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border-radius: var(--radius-sm);
+  }
+
+  .match-card__team:hover {
+    background: var(--bg-input);
+  }
 }
 
 .match-card:has(.match-card__overlay:active) {
@@ -91,9 +98,6 @@
   text-align: left;
 }
 
-.match-card__team:hover {
-  background: var(--bg-input);
-}
 
 .match-card__team--right {
   flex-direction: row-reverse;
@@ -222,14 +226,19 @@
   z-index: 2;
 }
 
-.match-card:hover .match-card__share,
-.match-card:focus-within .match-card__share {
-  opacity: 1;
+@media (hover: hover) {
+  .match-card:hover .match-card__share {
+    opacity: 1;
+  }
+
+  .match-card__share:hover {
+    background: var(--bg-input);
+    color: var(--text-primary);
+  }
 }
 
-.match-card__share:hover {
-  background: var(--bg-input);
-  color: var(--text-primary);
+.match-card:focus-within .match-card__share {
+  opacity: 1;
 }
 
 .match-card__odds {
